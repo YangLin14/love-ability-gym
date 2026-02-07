@@ -239,10 +239,16 @@ const Profile = () => {
           {/* Radar Chart */}
           {assessment && (
             <div style={{background: 'white', padding: '20px', borderRadius: '20px', boxShadow: 'var(--shadow-sm)', textAlign: 'center'}}>
-               <h4 style={{margin: '0 0 15px 0', fontSize: '14px', color: '#888'}}>{t('profile.lq_chart')}</h4>
-               <div style={{width: '200px', height: '200px', margin: '0 auto'}}>
-                  <RadarChart data={assessment.scores} size={200} />
+               <h4 style={{margin: '0 0 15px 0', fontSize: '16px', color: '#666'}}>Love Quotient (LQ)</h4>
+               <div style={{width: '250px', height: '250px', margin: '0 auto'}}>
+                  <RadarChart data={assessment.scores} size={250} />
                </div>
+               <div style={{marginTop: '15px', fontSize: '14px', color: '#666'}}>
+                  Total: <span style={{fontWeight: 'bold', color: 'var(--color-sage-green)'}}>{assessment.total} / 75</span>
+               </div>
+               <button onClick={() => navigate('/onboarding')} style={{marginTop: '10px', background: 'none', border: 'none', color: '#999', fontSize: '12px', cursor: 'pointer', textDecoration: 'underline'}}>
+                 Retake Assessment
+               </button>
             </div>
           )}
 

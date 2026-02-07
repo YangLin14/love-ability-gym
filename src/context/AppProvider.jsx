@@ -88,8 +88,6 @@ export const AppProvider = ({ children }) => {
       
       return {
         ...prev,
-        xp: remainingXp, // Simplified accumulation or reset? Let's just keep total XP for now and calc level
-        // Actually PDD says "Cultivation Levels". Let's stick to simple increment for MVP.
         level: newLevel,
         xp: newXp // Total XP
       };

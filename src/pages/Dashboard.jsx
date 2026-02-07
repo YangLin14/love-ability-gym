@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppProvider';
-import RadarChart from '../components/RadarChart';
 
 const Dashboard = () => {
   const { userStats, t, toggleLanguage, language } = useApp();
@@ -99,20 +98,7 @@ const Dashboard = () => {
 
       {/* Assessment / Stats Section */}
       <section style={{ marginBottom: '20px' }}>
-        {assessment ? (
-          <div style={{ backgroundColor: 'white', padding: '20px', borderRadius: '20px', boxShadow: '0 8px 20px rgba(0,0,0,0.08)', textAlign: 'center' }}>
-             <h3 style={{margin: '0 0 10px 0', fontSize: '16px', color: '#666'}}>Love Quotient (LQ)</h3>
-             <div style={{margin: '0 auto', width: '250px', height: '250px'}}>
-               <RadarChart data={assessment.scores} size={250} />
-             </div>
-             <div style={{marginTop: '10px', fontSize: '14px', color: '#666'}}>
-                Total: <span style={{fontWeight: 'bold', color: 'var(--color-sage-green)'}}>{assessment.total} / 75</span>
-             </div>
-             <button onClick={() => navigate('/onboarding')} style={{marginTop: '10px', background: 'none', border: 'none', color: '#999', fontSize: '12px', cursor: 'pointer', textDecoration: 'underline'}}>
-               Retake Assessment
-             </button>
-          </div>
-        ) : (
+        {!assessment && (
           <div 
              onClick={() => navigate('/onboarding')}
              style={{ 
