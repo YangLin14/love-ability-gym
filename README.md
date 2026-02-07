@@ -1,17 +1,110 @@
-# React + Vite
+# 💪 Love Ability Gym
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A mobile-first web application for training emotional intelligence and relationship skills through interactive exercises and guided practices.
 
-Currently, two official plugins are available:
+[![Made with React](https://img.shields.io/badge/Made%20with-React-61DAFB?style=flat-square&logo=react)](https://reactjs.org/)
+[![Vite](https://img.shields.io/badge/Vite-646CFF?style=flat-square&logo=vite&logoColor=white)](https://vitejs.dev/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](./LICENSE)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 📖 About
 
-## React Compiler
+Love Ability Gym is not about finding love—it's about **building the capacity to love**. Through 5 core modules, users can strengthen their "emotional muscles" with practical tools and exercises.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### 🎯 Core Modules
 
-## Expanding the ESLint configuration
+| Module | Focus | Key Tools |
+|--------|-------|-----------|
+| **Module 1** | 覺察 (Awareness) | Emotion Scan, Story Buster, Rapid Awareness |
+| **Module 2** | 表達 (Expression) | Draft Builder, Vocabulary Swap, Apology Builder |
+| **Module 3** | 共情 (Empathy) | Anger Decoder, Deep Listening Lab, Perspective Switcher |
+| **Module 4** | 允許 (Allowing) | Permission Slip, Reframing Tool |
+| **Module 5** | 影響 (Influence) | Spotlight Journal, Time Capsule, Vision Board |
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
-# love-ability-gym
+## ✨ Features
+
+- 🌐 **Bilingual Support** - Full English and Traditional Chinese (繁體中文)
+- 📱 **Mobile-First Design** - Optimized for phone use
+- 📊 **Progress Tracking** - XP system and emotional weather charts
+- 🆘 **Crisis Mode** - Quick-access breathing exercises for emotional emergencies
+- 💾 **Local Storage** - All data stored privately on your device
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js 18+ 
+- npm or yarn
+
+### Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/YangLin14/love-ability-gym.git
+cd love-ability-gym
+
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+```
+
+Open [http://localhost:5173](http://localhost:5173) to view the app.
+
+### Build for Production
+
+```bash
+npm run build
+```
+
+## 📁 Project Structure
+
+```
+love-ability-gym/
+├── docs/                    # Design documentation
+├── public/                  # Static assets
+├── src/
+│   ├── components/          # Shared UI components
+│   ├── context/             # React context providers
+│   ├── i18n/                # Internationalization
+│   ├── modules/             # Feature modules (1-5)
+│   │   ├── module1/         # Awareness tools
+│   │   ├── module2/         # Expression tools
+│   │   ├── module3/         # Empathy tools
+│   │   ├── module4/         # Allowing tools
+│   │   └── module5/         # Influence tools
+│   ├── pages/               # Main pages (Dashboard, Profile, Onboarding)
+│   ├── services/            # Storage and utility services
+│   └── styles/              # Global styles and theme
+├── index.html
+├── package.json
+└── vite.config.js
+```
+
+## 🛠️ Tech Stack
+
+- **Framework**: React 18
+- **Build Tool**: Vite
+- **Styling**: Vanilla CSS with CSS Variables
+- **State Management**: React Context
+- **Storage**: LocalStorage
+- **Charts**: Custom SVG components
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+Inspired by principles from:
+- Nonviolent Communication (NVC)
+- Emotional Intelligence research
+- Cognitive Behavioral Therapy (CBT)
+- Attachment theory
+
+---
+
+<p align="center">
+  <strong>你變了，世界就變了。</strong><br>
+  <em>"You change, the world changes."</em>
+</p>
