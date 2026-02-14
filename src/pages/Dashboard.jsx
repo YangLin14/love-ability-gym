@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppProvider';
 
 const Dashboard = () => {
   const { userStats, t, toggleLanguage, language } = useApp();
   const navigate = useNavigate();
   const [assessment, setAssessment] = useState(null);
-  const [activeTab, setActiveTab] = useState('all');
 
   useEffect(() => {
     const saved = localStorage.getItem('user_assessment');
@@ -15,245 +14,421 @@ const Dashboard = () => {
     }
   }, []);
 
-  const modules = [
-    { id: 'all', label: t('common.all') || 'All', icon: '♾️' },
-    { id: 'module1', label: t('module1.short') || 'Awareness', icon: '🌱' },
-    { id: 'module2', label: t('module2.short') || 'Expression', icon: '🗣️' },
-    { id: 'module3', label: t('module3.short') || 'Empathy', icon: '❤️' },
-    { id: 'module4', label: t('module4.short') || 'Allowing', icon: '🌊' },
-    { id: 'module5', label: t('module5.short') || 'Influence', icon: '🌟' },
+  const gardenModules = [
+    { id: 'module1', title: t('module1.short') || 'Awareness', sub: 'Understand', icon: 'water_drop' },
+    { id: 'module2', title: t('module2.short') || 'Expression', sub: 'Communicate', icon: 'graphic_eq' },
+    { id: 'module3', title: t('module3.short') || 'Empathy', sub: 'Connect', icon: 'diversity_1' },
+    { id: 'module4', title: t('module4.short') || 'Allowing', sub: 'Accept', icon: 'spa' },
   ];
 
-  const tools = [
-    // Module 1
-    { id: 'attribution', moduleId: 'module1', path: '/module1/attribution', title: t('module1.attribution.title'), icon: '🔄', color: '#E8F5E9' },
-    { id: 'emotion-scan', moduleId: 'module1', path: '/module1/emotion-scan', title: t('module1.emotion_scan.title'), icon: '🌡️', color: '#F1F8E9' },
-    { id: 'story-buster', moduleId: 'module1', path: '/module1/story-buster', title: t('module1.story_buster.title'), icon: '🎥', color: '#E0F2F1' },
-    { id: 'time-travel', moduleId: 'module1', path: '/module1/time-travel', title: t('module1.time_travel.title'), icon: '⏳', color: '#EFEBE9' },
-    { id: 'happiness-scale', moduleId: 'module1', path: '/module1/happiness-scale', title: t('module1.happiness_scale.title'), icon: '⚖️', color: '#FFF3E0' },
-    { id: 'rapid-awareness', moduleId: 'module1', path: '/module1/rapid-awareness', title: t('module1.rapid.title'), icon: '⚡', color: '#F3E5F5' },
-    
-    // Module 2
-    { id: 'draft-builder', moduleId: 'module2', path: '/module2/draft-builder', title: t('module2.draft_builder.title'), icon: '💌', color: '#FFF8E1' },
-    { id: 'vocabulary-swap', moduleId: 'module2', path: '/module2/vocabulary-swap', title: t('module2.vocabulary.title'), icon: '🔤', color: '#F3E5F5' },
-    { id: 'apology-builder', moduleId: 'module2', path: '/module2/apology-builder', title: t('module2.apology.title'), icon: '🕊️', color: '#E3F2FD' },
+  const module5 = {
+    id: 'module5',
+    title: t('module5.short') || 'Influence',
+    sub: 'Impact & Flow',
+    icon: 'blur_on'
+  };
 
-    // Module 3
-    { id: 'anger-decoder', moduleId: 'module3', path: '/module3/anger-decoder', title: t('module3.anger_decoder.title'), icon: '🧘', color: '#FFEBEE' },
-    { id: 'deep-listening', moduleId: 'module3', path: '/module3/deep-listening', title: t('module3.deep_listening.title'), icon: '👂', color: '#E1F5FE' },
-    { id: 'perspective-switcher', moduleId: 'module3', path: '/module3/perspective-switcher', title: t('module3.perspective.title'), icon: '👓', color: '#F9FBE7' },
+  // Get greeting based on time of day
+  const getTimeGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good Morning,';
+    if (hour < 18) return 'Good Afternoon,';
+    return 'Good Evening,';
+  };
 
-    // Module 4
-    { id: 'permission-slip', moduleId: 'module4', path: '/module4/permission-slip', title: t('module4.permission.title'), icon: '🎟️', color: '#FCE4EC' },
-    { id: 'reframing-tool', moduleId: 'module4', path: '/module4/reframing-tool', title: t('module4.reframe.title'), icon: '🃏', color: '#F3E5F5' },
-
-    // Module 5
-    { id: 'spotlight-journal', moduleId: 'module5', path: '/module5/spotlight-journal', title: t('module5.journal.title'), icon: '🔦', color: '#FFFDE7' },
-    { id: 'time-capsule', moduleId: 'module5', path: '/module5/time-capsule', title: t('module5.capsule.title'), icon: '💊', color: '#E0F7FA' },
-    { id: 'vision-board', moduleId: 'module5', path: '/module5/vision-board', title: t('module5.vision.title'), icon: '🗺️', color: '#E8EAF6' },
-  ];
-
-  const filteredTools = activeTab === 'all' ? tools : tools.filter(t => t.moduleId === activeTab);
+  // Format current date
+  const getFormattedDate = () => {
+    const now = new Date();
+    return now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+  };
 
   return (
-    <div className="page-container" style={{paddingTop: '10px'}}>
-      {/* Header */}
-      <header style={{ marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div>
-          <div style={{fontSize: '12px', color: '#999', textTransform: 'uppercase', letterSpacing: '1px'}}>Gym Dashboard</div>
-          <h1 style={{ margin: '5px 0 0', fontSize: '24px' }}>{t('dashboard.greeting')}</h1>
-        </div>
-        <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '5px' }}>
-           <div 
-             onClick={() => navigate('/profile')}
-             style={{ 
-               cursor: 'pointer',
-               background: assessment ? 'var(--color-sage-light)' : '#f0f0f0',
-               padding: '5px 10px',
-               borderRadius: '12px',
-               display: 'inline-block'
-             }}
-           >
-              <span style={{ fontWeight: 'bold', fontSize: '18px', color: 'var(--color-sage-dark)' }}>Lv. {userStats.level}</span>
-              {assessment && <span style={{ fontSize: '10px', color: '#666', marginLeft: '5px' }}>LQ: {assessment.total}</span>}
-           </div>
-           
-           <button 
-             onClick={toggleLanguage} 
-             style={{
-               background: 'none', 
-               border: '1px solid #eee', 
-               color: '#999', 
-               fontSize: '11px', 
-               padding: '2px 8px', 
-               borderRadius: '10px',
-               cursor: 'pointer',
-               marginTop: '5px'
-             }}
-           >
-             {language === 'en' ? 'CN' : 'EN'}
-           </button>
-        </div>
-      </header>
+    <div className="page-container" style={{paddingTop: '10px', paddingBottom: '100px'}}>
+      {/* Background Blobs */}
+      <div className="background-blobs">
+        <div className="blob-1"></div>
+        <div className="blob-2"></div>
+        <div className="blob-3"></div>
+      </div>
 
-      {/* Assessment / Stats Section */}
-      <section style={{ marginBottom: '20px' }}>
-        {!assessment && (
-          <div 
-             onClick={() => navigate('/onboarding')}
-             style={{ 
-               background: 'linear-gradient(135deg, var(--color-sage-dark) 0%, var(--color-sage-green) 100%)', 
-               color: 'white', 
-               padding: '24px 30px', 
-               borderRadius: 'var(--radius-lg)',
-               boxShadow: 'var(--shadow-md)',
-               cursor: 'pointer',
-               display: 'flex',
-               alignItems: 'center',
-               justifyContent: 'space-between',
-               position: 'relative',
-               overflow: 'hidden',
-               border: '1px solid rgba(255,255,255,0.1)'
-             }}
-          >
-             <div style={{zIndex: 1, position: 'relative'}}>
-               <div style={{
-                 background: 'rgba(255,255,255,0.2)', 
-                 width: 'fit-content', 
-                 padding: '4px 10px', 
-                 borderRadius: '20px', 
-                 fontSize: '11px', 
-                 fontWeight: 'bold', 
-                 marginBottom: '8px',
-                 textTransform: 'uppercase',
-                 letterSpacing: '1px'
-               }}>
-                 {t('dashboard.start_here')}
-               </div>
-               <h3 style={{ margin: '0 0 6px 0', color: 'white', fontSize: '20px', fontWeight: '700' }}>{t('dashboard.assessment_title')}</h3>
-               <p style={{ margin: '0', fontSize: '14px', opacity: 0.9, fontWeight: '400' }}>{t('dashboard.assessment_desc')}</p>
-             </div>
-             
-             <div style={{
-               background: 'white',
-               width: '50px',
-               height: '50px',
-               borderRadius: '50%',
-               display: 'flex',
-               alignItems: 'center',
-               justifyContent: 'center',
-               zIndex: 1,
-               boxShadow: '0 4px 10px rgba(0,0,0,0.1)'
-             }}>
-               <span style={{ fontSize: '24px' }}>👉</span>
-             </div>
+      {/* Content */}
+      <div style={{position: 'relative', zIndex: 10}}>
 
-             {/* Decorative Background Elements */}
-             <div style={{position: 'absolute', right: '-15px', bottom: '-25px', fontSize: '120px', opacity: '0.1', transform: 'rotate(-10deg)'}}>🏋️‍♀️</div>
-             <div style={{position: 'absolute', left: '-20px', top: '-20px', width: '100px', height: '100px', background: 'white', opacity: '0.05', borderRadius: '50%'}}></div>
+        {/* Header */}
+        <header style={{ marginBottom: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', paddingTop: '10px' }}>
+          <div>
+            <p style={{
+              color: 'var(--color-moss-dark)',
+              opacity: 0.7,
+              fontSize: '13px',
+              fontWeight: 500,
+              letterSpacing: '0.5px',
+              textTransform: 'uppercase',
+              margin: '0 0 4px 0'
+            }}>
+              {getFormattedDate()}
+            </p>
+            <div style={{fontSize: '11px', color: '#999', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '4px'}}>Gym Dashboard</div>
+            <h1 style={{
+              margin: 0,
+              fontFamily: 'var(--font-display)',
+              fontStyle: 'italic',
+              fontSize: '28px',
+              color: 'var(--color-soft-charcoal)',
+              lineHeight: 1.2,
+              fontWeight: 400
+            }}>
+              {getTimeGreeting()} <br/>
+              <span style={{fontStyle: 'normal', fontWeight: 300, color: 'var(--color-moss-dark)'}}>
+                {t('dashboard.greeting').replace('Hello, ', '')}
+              </span>
+            </h1>
           </div>
-        )}
-      </section>
-
-      {/* Focus Quote */}
-      <section style={{ marginBottom: '25px' }}>
-        <div style={{ 
-          backgroundColor: 'var(--color-ink-black)', 
-          color: 'white', 
-          padding: '20px', 
-          borderRadius: '20px',
-          boxShadow: '0 8px 20px rgba(0,0,0,0.15)',
-          position: 'relative',
-          overflow: 'hidden'
-        }}>
-           <div style={{position: 'absolute', right: '-10px', top: '-10px', fontSize: '80px', opacity: '0.1'}}>❝</div>
-           <p style={{ fontSize: '16px', fontFamily: 'var(--font-serif)', margin: 0, lineHeight: '1.5', fontStyle: 'italic' }}>
-             {t('dashboard.focus_quote')}
-           </p>
-           <div style={{marginTop: '10px', fontSize: '12px', opacity: '0.7', textTransform: 'uppercase', letterSpacing: '1px'}}>{t('dashboard.focus_title')}</div>
-        </div>
-      </section>
-
-      {/* Module Nav Bar */}
-      <section style={{ marginBottom: '20px', overflowX: 'auto', whiteSpace: 'nowrap', paddingBottom: '10px', scrollbarWidth: 'none' }} className="no-scrollbar">
-         <div style={{display: 'inline-flex', gap: '10px'}}>
-            {modules.map(mod => (
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '8px' }}>
+            <div
+              onClick={() => navigate('/profile')}
+              style={{
+                cursor: 'pointer',
+                borderRadius: '50%',
+                padding: '2px',
+                background: 'white',
+                boxShadow: 'var(--shadow-md)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+            >
+              <div style={{
+                width: '44px',
+                height: '44px',
+                borderRadius: '50%',
+                background: 'var(--color-moss-light)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                border: '1px solid var(--color-moss-light)'
+              }}>
+                <span style={{fontSize: '20px'}}>😊</span>
+              </div>
+            </div>
+            <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+              <span style={{
+                fontWeight: 600,
+                fontSize: '13px',
+                color: 'var(--color-moss-dark)',
+                background: 'var(--color-moss-light)',
+                padding: '3px 10px',
+                borderRadius: '20px'
+              }}>
+                Lv. {userStats.level}
+              </span>
               <button
-                key={mod.id}
-                onClick={() => setActiveTab(mod.id)}
+                onClick={toggleLanguage}
                 style={{
-                  padding: '10px 18px',
-                  borderRadius: '25px',
-                  border: 'none',
-                  background: activeTab === mod.id ? 'var(--color-sage-green)' : 'white',
-                  color: activeTab === mod.id ? 'white' : '#666',
-                  fontSize: '14px',
-                  fontWeight: '600',
-                  boxShadow: activeTab === mod.id ? '0 4px 12px rgba(89, 149, 117, 0.4)' : '0 2px 5px rgba(0,0,0,0.05)',
+                  background: 'white',
+                  border: '1px solid var(--color-border)',
+                  color: 'var(--color-moss-dark)',
+                  fontSize: '11px',
+                  padding: '3px 10px',
+                  borderRadius: '20px',
                   cursor: 'pointer',
-                  transition: 'all 0.2s ease',
-                  flexShrink: 0
+                  fontWeight: 500
                 }}
               >
-                <span style={{marginRight: '6px'}}>{mod.icon}</span>
-                {mod.label}
+                {language === 'en' ? 'CN' : 'EN'}
               </button>
-            ))}
-         </div>
-      </section>
+            </div>
+          </div>
+        </header>
 
-      {/* Tools Grid */}
-      <section style={{ marginBottom: '30px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
-          {filteredTools.map(tool => (
-            <Link key={tool.id} to={tool.path} style={{ textDecoration: 'none' }}>
-              <div className="tool-card-modern" style={{
-                 backgroundColor: 'white',
-                 padding: '20px',
-                 borderRadius: '20px',
-                 boxShadow: '0 8px 16px rgba(0,0,0,0.04)',
-                 display: 'flex',
-                 flexDirection: 'column',
-                 alignItems: 'center',
-                 justifyContent: 'center',
-                 gap: '12px',
-                 textAlign: 'center',
-                 height: '140px',
-                 transition: 'transform 0.2s ease',
-                 border: `1px solid ${tool.color}`
-              }}>
+        {/* Assessment Card */}
+        <section style={{ marginBottom: '24px' }}>
+          {!assessment && (
+            <div
+              onClick={() => navigate('/onboarding')}
+              className="glass-panel"
+              style={{
+                borderRadius: 'var(--radius-xl)',
+                padding: '28px',
+                cursor: 'pointer',
+                position: 'relative',
+                overflow: 'hidden',
+                transition: 'box-shadow 0.3s ease'
+              }}
+            >
+              <div style={{
+                position: 'absolute',
+                top: 0,
+                right: 0,
+                width: '120px',
+                height: '120px',
+                background: 'linear-gradient(to bottom right, rgba(184,207,179,0.3), transparent)',
+                borderBottomLeftRadius: '100%',
+                pointerEvents: 'none'
+              }}></div>
+              <div style={{position: 'relative', zIndex: 1}}>
                 <div style={{
-                  width: '50px', 
-                  height: '50px', 
-                  borderRadius: '16px', 
-                  background: tool.color, 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  justifyContent: 'center',
-                  fontSize: '24px'
+                  display: 'inline-block',
+                  background: 'var(--color-primary)',
+                  color: 'white',
+                  padding: '4px 12px',
+                  borderRadius: '20px',
+                  fontSize: '10px',
+                  fontWeight: 700,
+                  letterSpacing: '1.5px',
+                  textTransform: 'uppercase',
+                  marginBottom: '12px'
                 }}>
-                  {tool.icon}
+                  {t('dashboard.start_here')}
                 </div>
-                <div style={{
-                   fontSize: '14px', 
-                   fontWeight: '600', 
-                   color: '#333',
-                   lineHeight: '1.3'
+                <h3 style={{
+                  margin: '0 0 6px 0',
+                  color: 'var(--color-soft-charcoal)',
+                  fontSize: '20px',
+                  fontWeight: 500,
+                  fontFamily: 'var(--font-display)'
                 }}>
-                  {tool.title}
+                  {t('dashboard.assessment_title')}
+                </h3>
+                <p style={{
+                  margin: '0 0 16px 0',
+                  fontSize: '14px',
+                  color: 'var(--color-text-secondary)',
+                  fontWeight: 400
+                }}>
+                  {t('dashboard.assessment_desc')}
+                </p>
+                <div style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  background: 'var(--color-paper-white)',
+                  padding: '10px 20px',
+                  borderRadius: '50px',
+                  fontWeight: 500,
+                  fontSize: '14px',
+                  color: 'var(--color-moss-dark)',
+                  boxShadow: 'var(--shadow-sm)',
+                  transition: 'all 0.2s ease'
+                }}>
+                  <span className="material-symbols-outlined" style={{fontSize: '20px', color: 'var(--color-primary)'}}>
+                    play_circle
+                  </span>
+                  Start Assessment
                 </div>
               </div>
-            </Link>
-          ))}
-        </div>
-      </section>
+            </div>
+          )}
+        </section>
 
+        {/* Focus Quote */}
+        <section style={{ marginBottom: '32px' }}>
+          <div className="glass-panel" style={{
+            borderRadius: 'var(--radius-xl)',
+            padding: '24px',
+            position: 'relative',
+            overflow: 'hidden'
+          }}>
+            <div style={{
+              position: 'absolute',
+              top: 0,
+              right: 0,
+              width: '100px',
+              height: '100px',
+              background: 'linear-gradient(to bottom right, rgba(184,207,179,0.2), transparent)',
+              borderBottomLeftRadius: '100%',
+              pointerEvents: 'none'
+            }}></div>
+            <div style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px'}}>
+              <span className="material-symbols-outlined" style={{fontSize: '22px', color: 'var(--color-primary)'}}>
+                cloud_queue
+              </span>
+              <span style={{
+                fontFamily: 'var(--font-display)',
+                fontSize: '16px',
+                fontWeight: 500,
+                color: 'var(--color-moss-dark)'
+              }}>
+                {t('dashboard.focus_title')}
+              </span>
+            </div>
+            <p style={{
+              fontSize: '18px',
+              fontFamily: 'var(--font-display)',
+              margin: 0,
+              lineHeight: 1.5,
+              fontStyle: 'italic',
+              color: 'var(--color-soft-charcoal)',
+            }}>
+              {t('dashboard.focus_quote')}
+            </p>
+          </div>
+        </section>
 
+        {/* The Garden — 5 Modules */}
+        <section style={{ paddingBottom: '20px' }}>
+          <h3 style={{
+            fontFamily: 'var(--font-display)',
+            fontSize: '22px',
+            color: 'var(--color-soft-charcoal)',
+            marginBottom: '20px',
+            paddingLeft: '12px',
+            borderLeft: '4px solid rgba(143, 168, 137, 0.4)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            fontWeight: 400
+          }}>
+            The Garden
+            <span style={{
+              fontSize: '11px',
+              fontFamily: 'var(--font-body)',
+              fontWeight: 400,
+              color: '#999',
+              background: '#f5f5f5',
+              padding: '2px 10px',
+              borderRadius: '20px',
+              marginLeft: '4px'
+            }}>
+              5 Modules
+            </span>
+          </h3>
 
-      <style>{`
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .tool-card-modern:active { transform: scale(0.97); }
-      `}</style>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
+            {gardenModules.map(mod => (
+              <button
+                key={mod.id}
+                onClick={() => navigate(`/gym?module=${mod.id}`)}
+                className="soft-card"
+                style={{
+                  padding: '24px 16px',
+                  borderRadius: 'var(--radius-xl)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  border: '1px solid var(--color-border)',
+                  background: 'white'
+                }}
+              >
+                <div style={{
+                  width: '56px',
+                  height: '56px',
+                  borderRadius: '50%',
+                  background: 'var(--color-moss-light)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginBottom: '12px',
+                  transition: 'background 0.2s ease',
+                  boxShadow: 'inset 0 2px 4px 0 rgba(255, 255, 255, 0.6)'
+                }}>
+                  <span className="material-symbols-outlined" style={{
+                    fontSize: '26px',
+                    color: 'var(--color-moss-dark)',
+                    transition: 'color 0.2s ease'
+                  }}>
+                    {mod.icon}
+                  </span>
+                </div>
+                <span style={{
+                  fontFamily: 'var(--font-display)',
+                  fontSize: '17px',
+                  color: 'var(--color-soft-charcoal)',
+                  transition: 'color 0.2s ease'
+                }}>
+                  {mod.title}
+                </span>
+                <span style={{
+                  fontSize: '10px',
+                  color: '#999',
+                  textTransform: 'uppercase',
+                  letterSpacing: '1.5px',
+                  marginTop: '4px',
+                  fontWeight: 500
+                }}>
+                  {mod.sub}
+                </span>
+              </button>
+            ))}
+
+            {/* Module 5 — full width */}
+            <button
+              onClick={() => navigate(`/gym?module=${module5.id}`)}
+              style={{
+                gridColumn: 'span 2',
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '20px 24px',
+                borderRadius: 'var(--radius-xl)',
+                background: 'white',
+                border: '1px solid rgba(143, 168, 137, 0.1)',
+                boxShadow: 'var(--shadow-md)',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              <div style={{display: 'flex', alignItems: 'center', gap: '16px'}}>
+                <div style={{
+                  width: '56px',
+                  height: '56px',
+                  borderRadius: '50%',
+                  background: 'rgba(143, 168, 137, 0.1)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  transition: 'background 0.2s ease'
+                }}>
+                  <span className="material-symbols-outlined" style={{
+                    fontSize: '26px',
+                    color: 'var(--color-primary)',
+                    transition: 'color 0.2s ease'
+                  }}>
+                    {module5.icon}
+                  </span>
+                </div>
+                <div style={{display: 'flex', flexDirection: 'column', alignItems: 'flex-start'}}>
+                  <span style={{
+                    fontFamily: 'var(--font-display)',
+                    fontSize: '19px',
+                    color: 'var(--color-soft-charcoal)',
+                    fontWeight: 500
+                  }}>
+                    {module5.title}
+                  </span>
+                  <span style={{
+                    fontSize: '11px',
+                    color: '#999',
+                    textTransform: 'uppercase',
+                    letterSpacing: '1.5px',
+                    marginTop: '2px'
+                  }}>
+                    {module5.sub}
+                  </span>
+                </div>
+              </div>
+              <div style={{
+                width: '32px',
+                height: '32px',
+                borderRadius: '50%',
+                background: '#f9f9f9',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                <span className="material-symbols-outlined" style={{fontSize: '20px', color: '#bbb'}}>
+                  chevron_right
+                </span>
+              </div>
+            </button>
+          </div>
+        </section>
+
+      </div>
     </div>
   );
 };

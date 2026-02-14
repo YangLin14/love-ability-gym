@@ -4,6 +4,7 @@ import { useApp } from '../context/AppProvider';
 import StorageService from '../services/StorageService';
 import RadarChart from '../components/RadarChart';
 import SimpleLineChart from '../components/SimpleLineChart';
+import EmotionInsights from '../components/EmotionInsights';
 
 const Profile = () => {
   const { userProfile, setUserProfile, userStats, t } = useApp();
@@ -99,7 +100,23 @@ const Profile = () => {
         return <div style={{fontSize: '13px'}}>Shifted: "{log.event?.substring(0, 20)}...</div>;
     }
     if (log.tool === 'Story Buster') {
-        return <div style={{fontSize: '13px'}}>Busted: "{log.original_thought?.substring(0, 15)}..." → Fact: "{log.fact?.substring(0, 15)}..."</div>;
+        // Quiz mode: show score
+        if (log.type === 'quiz' && log.score !== undefined) {
+          return <div style={{fontSize: '13px'}}>
+            <span style={{fontWeight: 'bold', color: log.percentage >= 80 ? 'var(--color-sage-dark)' : log.percentage >= 50 ? '#fb8c00' : '#e57373'}}>
+              {log.score}/{log.total} ({log.percentage}%)
+            </span>
+          </div>;
+        }
+        // Practice mode: show before/after
+        if (log.type === 'practice' && log.original_thought) {
+          return <div style={{fontSize: '13px'}}>"{log.original_thought?.substring(0, 15)}..." → "{log.fact?.substring(0, 15)}..."</div>;
+        }
+        // Legacy fallback
+        if (log.original_thought) {
+          return <div style={{fontSize: '13px'}}>"{log.original_thought?.substring(0, 15)}..." → "{log.fact?.substring(0, 15)}..."</div>;
+        }
+        return <div style={{fontSize: '13px', color: '#888'}}>Completed</div>;
     }
     if (log.tool === 'Time Travel') {
         return <div style={{fontSize: '13px'}}>Visited self at age {log.age}</div>;
@@ -227,6 +244,14 @@ const Profile = () => {
           </>
         )}
       </div>
+
+      {/* Emotion Insights Report */}
+      <section style={{marginBottom: '30px'}}>
+        <h3 style={{marginBottom: '15px', color: '#444'}}>
+          {t('profile.insights_title') || (userProfile?.language === 'zh' ? '📊 情緒分析報告' : '📊 Emotion Insights')}
+        </h3>
+        <EmotionInsights period={14} />
+      </section>
 
       {/* Stats Charts */}
       <section style={{marginBottom: '30px'}}>

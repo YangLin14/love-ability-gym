@@ -378,6 +378,7 @@ export const translations = {
       no_history: "No training history yet. Go to the Gym!",
       usage_chart: "Tool Usage",
       lq_chart: "Love Quotient",
+      insights_title: "📊 Emotion Insights",
       reset_btn: "Reset All Data",
       reset_confirm: "Are you sure? This will delete all your progress and history. This cannot be undone."
     }
@@ -755,6 +756,7 @@ export const translations = {
       no_history: "暫無訓練記錄。快去健身房修煉吧！",
       usage_chart: "工具使用分佈",
       lq_chart: "愛商雷達圖",
+      insights_title: "📊 情緒分析報告",
       reset_btn: "重置所有數據",
       reset_confirm: "確定要重置嗎？這將刪除所有進度和歷史記錄，且無法恢復。"
     }
