@@ -57,6 +57,7 @@ const Dashboard = () => {
         {/* Header */}
         <header style={{ marginBottom: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', paddingTop: '10px' }}>
           <div>
+            <img src="/logo.png" alt="Love Ability Gym" style={{height: '40px', width: '40px', objectFit: 'cover', borderRadius: '50%', marginBottom: '12px', display: 'block'}} />
             <p style={{
               color: 'var(--color-moss-dark)',
               opacity: 0.7,
