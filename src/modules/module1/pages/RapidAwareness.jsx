@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useApp } from '../../../context/AppProvider';
 import StorageService from '../../../services/StorageService';
 import SimpleLineChart from '../../../components/SimpleLineChart';
+import BackButton from '../../../components/BackButton';
 
 const RapidAwareness = () => {
   const navigate = useNavigate();
@@ -80,7 +81,7 @@ const RapidAwareness = () => {
   return (
     <div className="page-container">
       <header className="page-header">
-        <button onClick={() => navigate('/')}>←</button>
+        <BackButton />
         <h2>{t('module1.rapid.title')}</h2>
       </header>
 

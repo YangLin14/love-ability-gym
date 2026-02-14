@@ -4,6 +4,7 @@ import { useApp } from '../../../context/AppProvider';
 import BodyMap from '../../module1/components/BodyMap';
 import StorageService from '../../../services/StorageService';
 import { emotionTaxonomy } from '../../../data/emotionTaxonomy';
+import BackButton from '../../../components/BackButton';
 
 const EmotionScan = () => {
   const navigate = useNavigate();
@@ -92,7 +93,7 @@ const EmotionScan = () => {
   return (
     <div className="page-container">
       <header className="page-header">
-        <button onClick={() => navigate('/')}>←</button>
+        <BackButton />
         <h2>{t('module1.emotion_scan.title')}</h2>
       </header>
 

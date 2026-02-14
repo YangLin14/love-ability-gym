@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../../../context/AppProvider';
 import StorageService from '../../../services/StorageService';
+import BackButton from '../../../components/BackButton';
 
 const SpotlightJournal = () => {
   const navigate = useNavigate();
@@ -31,7 +32,7 @@ const SpotlightJournal = () => {
   return (
     <div className="page-container">
       <header className="page-header">
-        <button onClick={() => navigate('/')}>←</button>
+        <BackButton />
         <h2>{t('module5.journal.title')}</h2>
       </header>
 

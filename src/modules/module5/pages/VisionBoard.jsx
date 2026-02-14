@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../../../context/AppProvider';
 import StorageService from '../../../services/StorageService';
+import BackButton from '../../../components/BackButton';
 
 const VisionBoard = () => {
   const navigate = useNavigate();
@@ -24,7 +25,7 @@ const VisionBoard = () => {
   return (
     <div className="page-container">
       <header className="page-header">
-        <button onClick={() => navigate('/')}>←</button>
+        <BackButton />
         <h2>{t('module5.vision.title')}</h2>
       </header>
 

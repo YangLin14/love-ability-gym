@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../../../context/AppProvider';
 import StorageService from '../../../services/StorageService';
+import BackButton from '../../../components/BackButton';
 
 const TimeTravel = () => {
   const navigate = useNavigate();
@@ -24,7 +25,7 @@ const TimeTravel = () => {
   return (
     <div className="page-container" style={{backgroundColor: step === 1 ? 'black' : 'var(--color-ink-black)', color: 'white'}}>
       <header className="page-header" style={{position: 'absolute', top: '20px', left: '20px', zIndex: 10}}>
-        <button onClick={() => navigate('/')} style={{color: 'white'}}>←</button>
+        <BackButton style={{color: 'white'}} />
       </header>
 
       {step === 1 && (

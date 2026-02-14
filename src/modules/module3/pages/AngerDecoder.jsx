@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useApp } from '../../../context/AppProvider';
 import StorageService from '../../../services/StorageService';
 import { emotionTaxonomy, getEmotionById } from '../../../data/emotionTaxonomy';
+import BackButton from '../../../components/BackButton';
 
 const AngerDecoder = () => {
   const navigate = useNavigate();
@@ -42,7 +43,7 @@ const AngerDecoder = () => {
   return (
     <div className="page-container">
       <header className="page-header">
-        <button onClick={() => navigate('/')}>←</button>
+        <BackButton />
         <h2>{t('module3.anger_decoder.title')}</h2>
       </header>
 

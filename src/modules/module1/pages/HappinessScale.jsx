@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../../../context/AppProvider';
+import BackButton from '../../../components/BackButton';
 
 const HappinessScale = () => {
   const navigate = useNavigate();
@@ -26,7 +27,7 @@ const HappinessScale = () => {
   return (
     <div className="page-container">
       <header className="page-header">
-        <button onClick={() => navigate('/')}>←</button>
+        <BackButton />
         <h2>{t('module1.happiness_scale.title')}</h2>
       </header>
 

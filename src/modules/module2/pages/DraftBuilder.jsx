@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useApp } from '../../../context/AppProvider';
 import StorageService from '../../../services/StorageService';
 import { emotionTaxonomy } from '../../../data/emotionTaxonomy';
+import BackButton from '../../../components/BackButton';
 
 const DraftBuilder = () => {
   const navigate = useNavigate();
@@ -82,7 +83,7 @@ const DraftBuilder = () => {
   return (
     <div className="page-container">
       <header className="page-header">
-        <button onClick={() => navigate('/')}>←</button>
+        <BackButton />
         <h2>{t('module2.draft_builder.title')}</h2>
       </header>
 

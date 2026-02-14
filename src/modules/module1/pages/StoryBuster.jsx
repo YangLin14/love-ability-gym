@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useApp } from '../../../context/AppProvider';
 import StorageService from '../../../services/StorageService';
 import { getRandomQuestions } from '../../../data/storyBusterQuiz';
+import BackButton from '../../../components/BackButton';
 
 const StoryBuster = () => {
   const navigate = useNavigate();
@@ -94,7 +95,24 @@ const StoryBuster = () => {
   return (
     <div className="page-container">
       <header className="page-header">
-        <button onClick={() => mode === 'menu' ? navigate('/') : setMode('menu')}>←</button>
+        {mode === 'menu' ? (
+          <BackButton />
+        ) : (
+          <button 
+            className="back-btn"
+            onClick={() => setMode('menu')}
+            style={{
+              background: 'none',
+              border: 'none',
+              fontSize: '24px',
+              cursor: 'pointer',
+              padding: '0 10px 0 0',
+              color: 'var(--color-ink-black)',
+              display: 'flex',
+              alignItems: 'center'
+            }}
+          >←</button>
+        )}
         <h2>{t('module1.story_buster.title')}</h2>
       </header>
 

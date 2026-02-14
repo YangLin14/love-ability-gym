@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../../../context/AppProvider';
 import StorageService from '../../../services/StorageService';
+import BackButton from '../../../components/BackButton';
 
 const DeepListeningLab = () => {
   const navigate = useNavigate();
@@ -202,7 +203,7 @@ const DeepListeningLab = () => {
   return (
     <div className="page-container" style={{textAlign: 'center'}}>
       <header className="page-header">
-         <button onClick={() => navigate('/')}>←</button>
+         <BackButton />
          <h2>{t('module3.deep_listening.title')}</h2>
       </header>
 
