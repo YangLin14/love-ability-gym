@@ -27,6 +27,14 @@ function AppContent() {
   return (
     <div className="app-container">
       <CrisisOverlay />
+      
+      {/* Persistent Background Blobs */}
+      <div className="background-blobs">
+        <div className="blob-1"></div>
+        <div className="blob-2"></div>
+        <div className="blob-3"></div>
+      </div>
+
       <Suspense fallback={<LoadingFallback />}>
         <Routes>
           <Route path="/" element={<Dashboard />} />

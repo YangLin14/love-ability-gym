@@ -44,13 +44,6 @@ const Dashboard = () => {
 
   return (
     <div className="page-container" style={{paddingTop: '10px', paddingBottom: '100px'}}>
-      {/* Background Blobs */}
-      <div className="background-blobs">
-        <div className="blob-1"></div>
-        <div className="blob-2"></div>
-        <div className="blob-3"></div>
-      </div>
-
       {/* Content */}
       <div style={{position: 'relative', zIndex: 10}}>
 
