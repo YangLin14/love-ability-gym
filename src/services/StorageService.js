@@ -1,5 +1,11 @@
 const STORAGE_PREFIX = 'love_gym_';
 
+// Simple in-memory cache
+const cache = {
+  logs: {},
+  lastFetch: {}
+};
+
 class StorageService {
   /**
    * Save a log entry to a specific module's storage
@@ -15,8 +21,13 @@ class StorageService {
         createdAt: new Date().toISOString(),
         ...data
       };
+      
       const updated = [newEntry, ...existing];
       localStorage.setItem(key, JSON.stringify(updated));
+      
+      // Update cache
+      cache.logs[moduleName] = updated;
+      
       return newEntry;
     } catch (e) {
       console.error("Storage save failed", e);
@@ -29,9 +40,19 @@ class StorageService {
    */
   static getLogs(moduleName) {
     try {
+      // Return cached if available
+      if (cache.logs[moduleName]) {
+        return cache.logs[moduleName];
+      }
+
       const key = `${STORAGE_PREFIX}${moduleName}_logs`;
       const raw = localStorage.getItem(key);
-      return raw ? JSON.parse(raw) : [];
+      const parsed = raw ? JSON.parse(raw) : [];
+      
+      // Update cache
+      cache.logs[moduleName] = parsed;
+      
+      return parsed;
     } catch (e) {
       console.error("Storage read failed", e);
       return [];
@@ -44,6 +65,7 @@ class StorageService {
   static clearLogs(moduleName) {
     const key = `${STORAGE_PREFIX}${moduleName}_logs`;
     localStorage.removeItem(key);
+    delete cache.logs[moduleName];
   }
 
   /**
@@ -53,9 +75,13 @@ class StorageService {
     const modules = ['module1', 'module2', 'module3', 'module4', 'module5'];
     let allLogs = [];
 
+    // This is still synchronous but now reads from memory if cached
     modules.forEach(mod => {
       const logs = this.getLogs(mod);
-      // Add module tag to each log
+      // Add module tag to each log. 
+      // Optimization: avoid re-mapping if we can, but since we are modifying object, 
+      // we might want to cache the "allLogs" result too if this becomes a bottleneck.
+      // For now, the heavy lifting (localStorage.getItem and JSON.parse) is cached.
       const taggedLogs = logs.map(log => ({ ...log, module: mod }));
       allLogs = [...allLogs, ...taggedLogs];
     });
@@ -85,6 +111,7 @@ class StorageService {
    */
   static clearAllData() {
     localStorage.clear();
+    cache.logs = {};
   }
 }
 

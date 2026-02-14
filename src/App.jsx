@@ -1,12 +1,16 @@
+import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { AppProvider } from './context/AppProvider';
-import Dashboard from './pages/Dashboard';
-import Gym from './pages/Gym';
-import Onboarding from './pages/Onboarding';
-import Profile from './pages/Profile';
 import CrisisButton from './components/CrisisButton';
 import CrisisOverlay from './components/CrisisOverlay';
 import BottomNav from './components/BottomNav';
+import LoadingFallback from './components/LoadingFallback';
+
+// Lazy load pages
+const Dashboard = lazy(() => import('./pages/Dashboard'));
+const Gym = lazy(() => import('./pages/Gym'));
+const Onboarding = lazy(() => import('./pages/Onboarding'));
+const Profile = lazy(() => import('./pages/Profile'));
 
 import { module1Routes } from './modules/module1/routes';
 import { module2Routes } from './modules/module2/routes';
@@ -23,35 +27,37 @@ function AppContent() {
   return (
     <div className="app-container">
       <CrisisOverlay />
-      <Routes>
-        <Route path="/" element={<Dashboard />} />
-        <Route path="/gym" element={<Gym />} />
-        <Route path="/onboarding" element={<Onboarding />} />
-        <Route path="/profile" element={<Profile />} />
-        
-        {/* Module 1 Routes */}
-        {module1Routes.map(route => (
-          <Route key={route.path} path={route.path} element={route.element} />
-        ))}
+      <Suspense fallback={<LoadingFallback />}>
+        <Routes>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/gym" element={<Gym />} />
+          <Route path="/onboarding" element={<Onboarding />} />
+          <Route path="/profile" element={<Profile />} />
+          
+          {/* Module 1 Routes */}
+          {module1Routes.map(route => (
+            <Route key={route.path} path={route.path} element={route.element} />
+          ))}
 
-        {/* Module 2 Routes */}
-        {module2Routes.map(route => (
-          <Route key={route.path} path={route.path} element={route.element} />
-        ))}
-        
-        {/* Module 3 Routes */}
-        {module3Routes.map(route => (
-          <Route key={route.path} path={route.path} element={route.element} />
-        ))}
-        {/* Module 4 Routes */}
-        {module4Routes.map(route => (
-          <Route key={route.path} path={route.path} element={route.element} />
-        ))}
-        {/* Module 5 Routes */}
-        {module5Routes.map(route => (
-          <Route key={route.path} path={route.path} element={route.element} />
-        ))}
-      </Routes>
+          {/* Module 2 Routes */}
+          {module2Routes.map(route => (
+            <Route key={route.path} path={route.path} element={route.element} />
+          ))}
+          
+          {/* Module 3 Routes */}
+          {module3Routes.map(route => (
+            <Route key={route.path} path={route.path} element={route.element} />
+          ))}
+          {/* Module 4 Routes */}
+          {module4Routes.map(route => (
+            <Route key={route.path} path={route.path} element={route.element} />
+          ))}
+          {/* Module 5 Routes */}
+          {module5Routes.map(route => (
+            <Route key={route.path} path={route.path} element={route.element} />
+          ))}
+        </Routes>
+      </Suspense>
       <CrisisButton />
       {showNav && <BottomNav />}
     </div>
