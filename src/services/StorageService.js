@@ -14,6 +14,28 @@ class StorageService {
    * @param {string} moduleName - 'module1', 'module2', etc.
    * @param {object} data - The data directly.
    */
+  /**
+   * Subscribe to storage changes
+   * @param {Function} callback 
+   * @returns {Function} unsubscribe
+   */
+  static subscribe(callback) {
+    const handler = () => callback();
+    window.addEventListener('love-gym-storage-update', handler);
+    return () => {
+      window.removeEventListener('love-gym-storage-update', handler);
+    };
+  }
+
+  static notify() {
+    window.dispatchEvent(new Event('love-gym-storage-update'));
+  }
+
+  /**
+   * Save a log entry to a specific module's storage
+   * @param {string} moduleName - 'module1', 'module2', etc.
+   * @param {object} data - The data directly.
+   */
   static saveLog(moduleName, data) {
     try {
       const key = `${STORAGE_PREFIX}${moduleName}_logs`;
@@ -30,6 +52,9 @@ class StorageService {
       
       // Update cache
       cache.logs[moduleName] = updated;
+
+      // Notify listeners
+      this.notify();
 
       // Try to sync to cloud immediately if online
       this.syncEntryToCloud(moduleName, newEntry);
@@ -153,6 +178,7 @@ class StorageService {
     const key = `${STORAGE_PREFIX}${moduleName}_logs`;
     localStorage.removeItem(key);
     delete cache.logs[moduleName];
+    this.notify();
   }
 
   /**
@@ -199,6 +225,7 @@ class StorageService {
   static clearAllData() {
     localStorage.clear();
     cache.logs = {};
+    this.notify();
     if (supabase) supabase.auth.signOut();
   }
 }

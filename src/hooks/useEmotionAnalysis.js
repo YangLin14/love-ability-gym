@@ -15,6 +15,15 @@ export const useEmotionAnalysis = (period = 14) => {
 
   useEffect(() => {
     analyzeAllData();
+    
+    // Subscribe to storage changes for real-time updates
+    const unsubscribe = StorageService.subscribe(() => {
+      analyzeAllData();
+    });
+
+    return () => {
+      unsubscribe();
+    };
   }, [period, language]); // Re-analyze when period or language changes
 
   const analyzeAllData = () => {
@@ -26,6 +35,7 @@ export const useEmotionAnalysis = (period = 14) => {
     // Filter by date range
     const now = new Date();
     const startDate = new Date(now.getTime() - period * 24 * 60 * 60 * 1000);
+    startDate.setHours(0, 0, 0, 0); // Start of day
     
     const recentLogs = allLogs.filter(log => {
       const logDate = new Date(log.timestamp);
@@ -77,20 +87,39 @@ export const useEmotionAnalysis = (period = 14) => {
       }
 
       // Collect intensity data
-      if (log.intensity !== undefined) {
-        intensityData.push({
-          date: new Date(log.timestamp),
-          intensity: log.intensity,
-          emotion: log.emotion
-        });
+      // Unified logic for ANY tool that records emotion + intensity/score
+      let score = 0;
+      let hasScore = false;
+
+      // 1. Direct Score (e.g. Rapid Awareness: -10 to 10)
+      if (log.score !== undefined && log.score !== null) {
+         score = Number(log.score);
+         hasScore = true;
+      } 
+      // 2. Intensity + Category (e.g. Emotion Scan: 1 to 10, needs sign)
+      else if (log.intensity !== undefined && log.intensity !== null) {
+         const intensityVal = Number(log.intensity);
+         
+         // Determine polarity
+         // Joy/Peace are positive. All others (Anger, Sadness, Fear, Disgust, Shame) are negative.
+         // We check english and chinese category names just in case
+         const positiveCategories = ['Joy', '喜悅', 'Peace', '平靜'];
+         const category = log.category || log.category_zh || '';
+         
+         const isPositive = positiveCategories.some(c => category.includes(c));
+         
+         score = isPositive ? intensityVal : -intensityVal;
+         hasScore = true;
       }
 
-      // Process Rapid Awareness scores
-      if (log.score !== undefined && log.tool === 'Rapid Awareness') {
+      if (hasScore && !isNaN(score)) {
         intensityData.push({
           date: new Date(log.timestamp),
-          intensity: Math.abs(log.score),
-          emotion: log.emotion || 'Rapid Check'
+          intensity: score, // We keep 'intensity' key for backward compat but it stores signed score now? 
+                            // Actually existing code below used 'intensity' as absolute value for avg calculation
+                            // Let's split usage.
+          score: score,     // Signed value
+          emotion: log.emotion || 'Check-in'
         });
       }
     });
@@ -112,9 +141,9 @@ export const useEmotionAnalysis = (period = 14) => {
       .sort((a, b) => b[1] - a[1])
       .slice(0, 5);
 
-    // Calculate averages
+    // Calculate averages (Use absolute intensity for "average intensity" stat)
     const avgIntensity = intensityData.length > 0 
-      ? (intensityData.reduce((sum, d) => sum + d.intensity, 0) / intensityData.length).toFixed(1)
+      ? (intensityData.reduce((sum, d) => sum + Math.abs(d.score), 0) / intensityData.length).toFixed(1)
       : null;
 
     // Find dominant category
@@ -123,54 +152,50 @@ export const useEmotionAnalysis = (period = 14) => {
       cat.category === dominantCategory?.[0] || cat.category_zh === dominantCategory?.[0]
     );
 
-    // Calculate Daily Fluctuations (Last 14 days)
-    const dailyFluctuations = [];
+    // 1. Calculate Daily Averages (Last 14 days)
+    const dailyAverages = [];
     for (let i = period - 1; i >= 0; i--) {
       const d = new Date();
       d.setDate(d.getDate() - i);
       const dateStr = d.toLocaleDateString();
       
-      // Find logs for this day
-      const dayLogs = recentLogs.filter(l => new Date(l.timestamp).toLocaleDateString() === dateStr);
+      const dayLogs = intensityData.filter(l => l.date.toLocaleDateString() === dateStr);
       
-      let maxScore = 0;
+      let avgScore = 0;
       let dominantEmotionForDay = '';
 
       if (dayLogs.length > 0) {
-        // Map logs to scores
-        const scores = dayLogs.map(l => {
-           let score = 0;
-           let emo = '';
-           
-           if (l.tool === 'Rapid Awareness' && l.score !== undefined) {
-             score = l.score;
-             emo = l.emotion;
-           } else if (l.type === 'emotion_scan' && l.intensity) {
-             // Determine polarity based on category
-             const isJoy = l.category === 'Joy' || l.category_zh === '喜悅';
-             score = isJoy ? l.intensity : -l.intensity;
-             emo = l.emotion;
-           }
-           
-           return { score, emo };
-        }).filter(s => s.score !== 0); // Filter out invalid entries if any
-
-        if (scores.length > 0) {
-            // Find max absolute score
-            const maxAbs = Math.max(...scores.map(s => Math.abs(s.score)));
-            const maxEntry = scores.find(s => Math.abs(s.score) === maxAbs);
-            maxScore = maxEntry ? maxEntry.score : 0;
-            dominantEmotionForDay = maxEntry ? maxEntry.emo : '';
-        }
+          // Calculate average score for the day
+          const sum = dayLogs.reduce((acc, curr) => acc + curr.score, 0);
+          avgScore = Number((sum / dayLogs.length).toFixed(1));
+          
+          // Find dominant emotion (by frequency for simplicity, or max intensity)
+          // Let's use the emotion with highest absolute intensity just like before
+          const maxAbs = Math.max(...dayLogs.map(s => Math.abs(s.score)));
+          const maxEntry = dayLogs.find(s => Math.abs(s.score) === maxAbs);
+          if (maxEntry) dominantEmotionForDay = maxEntry.emotion;
       }
 
-      dailyFluctuations.push({
+      dailyAverages.push({
         label: `${d.getMonth() + 1}/${d.getDate()}`,
-        score: maxScore,
+        score: avgScore,
         emotion: dominantEmotionForDay,
         fullDate: dateStr
       });
     }
+
+    // 2. Calculate Today's Intraday Data
+    const todayStr = new Date().toLocaleDateString();
+    const todayLogs = intensityData
+      .filter(l => l.date.toLocaleDateString() === todayStr)
+      .sort((a, b) => a.date - b.date); // Sort by time ascending
+
+    const todayIntraday = todayLogs.map(l => ({
+      label: l.date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }),
+      score: l.score,
+      emotion: l.emotion,
+      fullDate: l.date.toISOString()
+    }));
 
     setInsights({
       totalRecords: recentLogs.length,
@@ -181,7 +206,8 @@ export const useEmotionAnalysis = (period = 14) => {
       dominantCategory: categoryInfo,
       dominantCategoryCount: dominantCategory?.[1] || 0,
       avgIntensity,
-      dailyFluctuations,
+      dailyAverages,
+      todayIntraday,
       period
     });
     

@@ -7,9 +7,16 @@ import SimpleLineChart from '@/components/SimpleLineChart';
  * EmotionInsights Component
  * Analyzes ALL user emotion data from ALL modules and generates comprehensive insights
  */
-const EmotionInsights = ({ period = 14 }) => {
+const EmotionInsights = ({ period = 14, defaultView = 'today' }) => {
   const { language } = useLanguage();
   const { insights, loading } = useEmotionAnalysis(period);
+  const [viewMode, setViewMode] = React.useState(defaultView); // '14days' or 'today'
+
+  React.useEffect(() => {
+    if (defaultView) {
+      setViewMode(defaultView);
+    }
+  }, [defaultView]);
 
   if (loading) {
     return (
@@ -146,22 +153,72 @@ const EmotionInsights = ({ period = 14 }) => {
         </div>
       )}
 
-      {/* Daily Fluctuations Chart */}
-      {insights.dailyFluctuations && (
-        <div style={styles.section}>
-          <h4 style={styles.sectionTitle}>
-            📈 {language === 'zh' ? '情緒起伏 (過去14天)' : 'Emotional Fluctuations (14 Days)'}
-          </h4>
-          <div style={{ width: '100%', height: '200px', marginBottom: '20px' }}>
-             <SimpleLineChart data={insights.dailyFluctuations} />
-          </div>
-          <p style={{fontSize: '12px', color: '#999', textAlign: 'center', marginBottom: '20px'}}>
-            {language === 'zh' 
-              ? '此圖表結合了您的快速覺察分數與情緒掃描強度。'
-              : 'This chart combines your Rapid Awareness scores and Emotion Scan intensities.'}
-          </p>
+      {/* Dual Chart Section */}
+      <div style={styles.section}>
+        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px'}}>
+           <h4 style={{margin: 0, fontSize: '15px', color: '#333'}}>
+             📈 {viewMode === '14days' 
+               ? (language === 'zh' ? '情緒起伏 (過去14天平均)' : 'Daily Average (14 Days)')
+               : (language === 'zh' ? '今日情緒起伏' : 'Today\'s Fluctuations')}
+           </h4>
+           
+           <div style={{display: 'flex', background: '#f0f0f0', borderRadius: '20px', padding: '2px'}}>
+              <button 
+                onClick={() => setViewMode('today')}
+                style={{
+                  padding: '5px 12px', 
+                  borderRadius: '16px', 
+                  border: 'none', 
+                  background: viewMode === 'today' ? 'white' : 'transparent',
+                  color: viewMode === 'today' ? 'var(--color-sage-dark)' : '#888',
+                  boxShadow: viewMode === 'today' ? '0 2px 5px rgba(0,0,0,0.1)' : 'none',
+                  fontSize: '12px',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s'
+                }}
+              >
+                {language === 'zh' ? '今日' : 'Today'}
+              </button>
+              <button 
+                onClick={() => setViewMode('14days')}
+                style={{
+                  padding: '5px 12px', 
+                  borderRadius: '16px', 
+                  border: 'none', 
+                  background: viewMode === '14days' ? 'white' : 'transparent',
+                  color: viewMode === '14days' ? 'var(--color-sage-dark)' : '#888',
+                  boxShadow: viewMode === '14days' ? '0 2px 5px rgba(0,0,0,0.1)' : 'none',
+                  fontSize: '12px',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s'
+                }}
+              >
+                {language === 'zh' ? '14天' : '14 Days'}
+              </button>
+           </div>
         </div>
-      )}
+
+        <div style={{ width: '100%', height: '200px', marginBottom: '20px' }}>
+           {viewMode === 'today' ? (
+              insights.todayIntraday && insights.todayIntraday.length > 0 ? (
+                <SimpleLineChart data={insights.todayIntraday} />
+              ) : (
+                <div style={{height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#999', fontSize: '14px', background: '#f9f9f9', borderRadius: '12px'}}>
+                  {language === 'zh' ? '今天還沒有記錄' : 'No records today'}
+                </div>
+              )
+           ) : (
+              <SimpleLineChart data={insights.dailyAverages || []} />
+           )}
+        </div>
+        <p style={{fontSize: '12px', color: '#999', textAlign: 'center', marginBottom: '20px'}}>
+          {viewMode === 'today'
+            ? (language === 'zh' ? '顯示您今天的每一筆情緒記錄' : 'Showing every emotion log from today')
+            : (language === 'zh' ? '顯示每天的情緒平均分數' : 'Showing daily average emotion scores')}
+        </p>
+      </div>
 
       {/* Insight Message */}
       {insights.topNeeds.length > 0 && (

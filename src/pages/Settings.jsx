@@ -88,7 +88,11 @@ const Settings = () => {
              <form onSubmit={handleAuth} style={{display: 'flex', flexDirection: 'column', gap: '10px'}}>
                <input 
                  type="email" 
+                 name="email"
+                 id="email"
+                 aria-label={t('settings.email_placeholder')}
                  placeholder={t('settings.email_placeholder')} 
+                 autoComplete="username"
                  value={email}
                  onChange={(e) => setEmail(e.target.value)}
                  style={{
@@ -99,7 +103,11 @@ const Settings = () => {
                />
                <input 
                  type="password" 
+                 name="password"
+                 id="password"
+                 aria-label={t('settings.password_placeholder')}
                  placeholder={t('settings.password_placeholder')} 
+                 autoComplete="current-password"
                  value={password}
                  onChange={(e) => setPassword(e.target.value)}
                  style={{

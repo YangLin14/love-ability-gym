@@ -4,12 +4,12 @@ import { useApp } from '../../../context/AppProvider';
 import StorageService from '../../../services/StorageService';
 import SimpleLineChart from '../../../components/SimpleLineChart';
 import BackButton from '../../../components/BackButton';
-import { useEmotionAnalysis } from '../../../hooks/useEmotionAnalysis';
+// import { useEmotionAnalysis } from '../../../hooks/useEmotionAnalysis';
 
 const RapidAwareness = () => {
   const navigate = useNavigate();
   const { t, addXp } = useApp();
-  const { insights, loading } = useEmotionAnalysis(14); // Use shared hook for consistent data
+  // const { insights, loading } = useEmotionAnalysis(14); // Removed as we navigate to profile now
   
   // Form State
   const [form, setForm] = useState({
@@ -19,8 +19,8 @@ const RapidAwareness = () => {
     emotion: '',
     score: 0 
   });
-
-  const [showHistory, setShowHistory] = useState(false);
+  
+  // const [showHistory, setShowHistory] = useState(false); // Removed
 
   const handleSave = () => {
     if (!form.location || !form.event || !form.emotion) return;
@@ -69,25 +69,25 @@ const RapidAwareness = () => {
       {/* Toggle View */}
       <div style={{display: 'flex', background: '#eee', padding: '5px', borderRadius: '50px', marginBottom: '20px'}}>
          <button 
-           onClick={() => setShowHistory(false)}
-           style={{flex: 1, padding: '10px', borderRadius: '40px', border: 'none', background: !showHistory ? 'white' : 'transparent', fontWeight: !showHistory ? 'bold' : 'normal', cursor: 'pointer'}}
+           style={{flex: 1, padding: '10px', borderRadius: '40px', border: 'none', background: 'white', fontWeight: 'bold', cursor: 'default'}}
          >
            Record
          </button>
          <button 
-           onClick={() => setShowHistory(true)}
-           style={{flex: 1, padding: '10px', borderRadius: '40px', border: 'none', background: showHistory ? 'white' : 'transparent', fontWeight: showHistory ? 'bold' : 'normal', cursor: 'pointer'}}
+           onClick={() => navigate('/profile', { state: { viewMode: 'today', scrollToInsights: true } })}
+           style={{flex: 1, padding: '10px', borderRadius: '40px', border: 'none', background: 'transparent', fontWeight: 'normal', cursor: 'pointer'}}
          >
-           Chart (14 Days)
+           View Report
          </button>
       </div>
 
-      {!showHistory ? (
-        <div className="fade-in">
+      <div className="fade-in">
            {/* Time (Auto/Editable) */}
            <div className="form-group">
-              <label>{t('module1.rapid.time')}</label>
+              <label htmlFor="time">{t('module1.rapid.time')}</label>
               <input 
+                id="time"
+                name="time"
                 value={form.time} 
                 onChange={e => setForm({...form, time: e.target.value})}
                 style={inputStyle}
@@ -96,8 +96,10 @@ const RapidAwareness = () => {
 
            {/* Location */}
            <div className="form-group">
-              <label>{t('module1.rapid.location')}</label>
+              <label htmlFor="location">{t('module1.rapid.location')}</label>
               <input 
+                id="location"
+                name="location"
                 placeholder={t('module1.rapid.location_ph')}
                 value={form.location}
                 onChange={e => setForm({...form, location: e.target.value})}
@@ -107,8 +109,10 @@ const RapidAwareness = () => {
 
            {/* Event */}
            <div className="form-group">
-              <label>{t('module1.rapid.event')}</label>
+              <label htmlFor="event">{t('module1.rapid.event')}</label>
               <input 
+                id="event"
+                name="event"
                 placeholder={t('module1.rapid.event_ph')}
                 value={form.event}
                 onChange={e => setForm({...form, event: e.target.value})}
@@ -118,8 +122,10 @@ const RapidAwareness = () => {
 
            {/* Emotion */}
            <div className="form-group">
-              <label>{t('module1.rapid.emotion')}</label>
+              <label htmlFor="emotion">{t('module1.rapid.emotion')}</label>
               <input 
+                id="emotion"
+                name="emotion"
                 placeholder={t('module1.rapid.emotion_ph')}
                 value={form.emotion}
                 onChange={e => setForm({...form, emotion: e.target.value})}
@@ -129,9 +135,11 @@ const RapidAwareness = () => {
 
            {/* Score Slider (-10 to 10) */}
            <div className="form-group">
-              <label>{t('module1.rapid.score')}: <span style={{fontSize: '24px', fontWeight: 'bold', color: form.score > 0 ? 'var(--color-sage-dark)' : (form.score < 0 ? '#c62828' : '#666')}}>{form.score}</span></label>
+              <label htmlFor="score">{t('module1.rapid.score')}: <span style={{fontSize: '24px', fontWeight: 'bold', color: form.score > 0 ? 'var(--color-sage-dark)' : (form.score < 0 ? '#c62828' : '#666')}}>{form.score}</span></label>
               <input 
                 type="range" 
+                id="score"
+                name="score"
                 min="-10" 
                 max="10" 
                 value={form.score} 
@@ -153,23 +161,6 @@ const RapidAwareness = () => {
              {t('common.save')}
            </button>
         </div>
-      ) : (
-        <div className="fade-in chart-container" style={{background: 'white', padding: '20px', borderRadius: '16px', boxShadow: 'var(--shadow-sm)'}}>
-           <h3 style={{textAlign: 'center', marginBottom: '20px'}}>{t('module1.rapid.chart_title')}</h3>
-           
-           {loading ? (
-             <div style={{textAlign: 'center', padding: '20px'}}>Loading...</div>
-           ) : (
-             <div style={{width: '100%', height: '250px'}}>
-                <SimpleLineChart data={insights?.dailyFluctuations || []} />
-             </div>
-           )}
-           
-           <p style={{fontSize: '12px', color: '#999', marginTop: '10px', textAlign: 'center'}}>
-             {t('module1.rapid.chart_desc')}
-           </p>
-        </div>
-      )}
 
       <style>{`
         .form-group { margin-bottom: 20px; }

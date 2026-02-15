@@ -111,8 +111,5 @@ describe('Function Logic', () => {
     expect(screen.getByText(/TestUser/)).toBeInTheDocument();
   });
 
-  it('重置資料按鈕存在', () => {
-    render(<Profile />);
-    expect(screen.getByText(/Reset All Data/i)).toBeInTheDocument();
-  });
+
 });

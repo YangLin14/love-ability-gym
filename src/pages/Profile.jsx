@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useApp } from '../context/AppProvider';
 import { useAuth } from '../context/AuthContext';
 import StorageService from '../services/StorageService';
@@ -10,6 +10,7 @@ const Profile = () => {
   const { userProfile, setUserProfile, userStats, t, deferredPrompt, isIos, isStandalone, installPWA } = useApp();
   const { user, signIn, signUp, signOut, loading: authLoading } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState(userProfile);
@@ -38,6 +39,18 @@ const Profile = () => {
       setAssessment(JSON.parse(savedAssessment));
     }
   };
+
+  useEffect(() => {
+    if (location.state?.scrollToInsights) {
+        // Small timeout to allow render
+        setTimeout(() => {
+            const element = document.getElementById('emotion-insights-section');
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth' });
+            }
+        }, 100);
+    }
+  }, [location.state]);
 
 
 
@@ -262,11 +275,11 @@ const Profile = () => {
 
 
       {/* Emotion Insights Report */}
-      <section style={{marginBottom: '30px'}}>
+      <section id="emotion-insights-section" style={{marginBottom: '30px'}}>
         <h3 style={{marginBottom: '15px', color: '#444'}}>
           {t('profile.insights_title') || (userProfile?.language === 'zh' ? '📊 情緒分析報告' : '📊 Emotion Insights')}
         </h3>
-        <EmotionInsights period={14} />
+        <EmotionInsights period={14} defaultView={location.state?.viewMode || 'today'} />
       </section>
 
       {/* Stats Charts */}

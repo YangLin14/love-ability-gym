@@ -45,6 +45,7 @@ const EmotionScan = () => {
   
   const handleSave = () => {
     const report = {
+      tool: 'Emotion Scan', // Standardize tool name
       type: 'emotion_scan',
       emotion: emotion ? getEmotionLabel(emotion) : '',
       emotionId: emotion?.id,
@@ -52,7 +53,7 @@ const EmotionScan = () => {
       category_zh: selectedCategory?.category_zh,
       definition: getDefinition(emotion),
       need: getNeed(emotion),
-      intensity,
+      intensity: Number(intensity),
       bodyPart,
       timestamp: new Date().toISOString()
     };
