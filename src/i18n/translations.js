@@ -38,6 +38,17 @@ export const translations = {
       ios_step1: "Tap the 'Share' button",
       ios_step2: "Select 'Add to Home Screen'"
     },
+    crisis: {
+      active: "Crisis Mode Active",
+      inhale: "Inhale...",
+      hold: "Hold",
+      exhale: "Exhale...",
+      nose: "IN NOSE",
+      mouth: "OUT MOUTH",
+      still: "HOLD",
+      focus_text: "Focus only on the circle.\nLet your anxiety dissolve with each breath.",
+      seconds: "seconds"
+    },
     common: {
       user: "User",
       all: "All",
@@ -454,6 +465,17 @@ export const translations = {
       install_btn: "立即安裝",
       ios_step1: "點擊 '分享' 按鈕",
       ios_step2: "選擇 '加入主畫面'"
+    },
+    crisis: {
+      active: "緊急模式已啟動",
+      inhale: "吸氣...",
+      hold: "屏息",
+      exhale: "呼氣...",
+      nose: "鼻子吸氣",
+      mouth: "嘴巴呼氣",
+      still: "保持不動",
+      focus_text: "專注於圓圈。\n隨著每一次呼吸釋放焦慮。",
+      seconds: "秒"
     },
     common: {
       user: "修煉者",

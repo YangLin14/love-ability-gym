@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useApp } from '../context/AppProvider';
+import { motion, AnimatePresence } from 'framer-motion';
 
 // CUSTOM 8-3-8 BREATHING CYCLE
 // Total cycle = 19 seconds
@@ -59,26 +60,39 @@ const CrisisOverlay = () => {
     return () => clearInterval(intervalRef.current);
   }, [isCrisisMode]);
 
-  if (!isCrisisMode) return null;
-
   const phase = BREATHING_CYCLE[breathState.phaseIndex];
   const totalCycles = 4;
 
   return (
-    <div style={{
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      width: '100%',
-      height: '100%',
-      background: 'linear-gradient(160deg, #ece4f4 0%, #e5ddf0 30%, #e8dfe8 60%, #efe7ef 100%)',
-      zIndex: 2000,
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      overflow: 'hidden',
-      fontFamily: 'var(--font-body)'
-    }}>
+    <AnimatePresence>
+      {isCrisisMode && (
+        <motion.div
+          layoutId="crisis-orb"
+          initial={{ borderRadius: '50%', opacity: 0 }}
+          animate={{ borderRadius: '0%', opacity: 1, transition: { duration: 0.5, ease: [0.4, 0, 0.2, 1] } }}
+          exit={{ borderRadius: '50%', opacity: 0, transition: { duration: 0.4 } }}
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100vw',
+            height: '100vh', // Ensure full viewport
+            background: 'linear-gradient(160deg, #ece4f4 0%, #e5ddf0 30%, #e8dfe8 60%, #efe7ef 100%)',
+            zIndex: 2000,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            overflow: 'hidden',
+            fontFamily: 'var(--font-body)'
+          }}
+        >
+          {/* Content Container - Fades in AFTER expansion */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0, transition: { delay: 0.3, duration: 0.4 } }}
+            exit={{ opacity: 0, y: 20, transition: { duration: 0.2 } }}
+            style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}
+          >
       {/* Top Bar */}
       <div style={{
         position: 'relative',
@@ -131,7 +145,7 @@ const CrisisOverlay = () => {
             letterSpacing: '1.5px',
             textTransform: 'uppercase',
             color: '#7a6b9d'
-          }}>Crisis Mode Active</span>
+          }}>{t('crisis.active')}</span>
         </div>
 
         <button
@@ -218,14 +232,14 @@ const CrisisOverlay = () => {
               margin: '0 0 8px 0',
               transition: 'all 0.5s ease'
             }}>
-              {phase.label}
+              {t(`crisis.${phase.key}`)}
             </h1>
             <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', opacity: 0.8}}>
               <span style={{ fontSize: '12px', textTransform: 'uppercase', letterSpacing: '2.5px', fontWeight: 600, color: '#a78bbc' }}>
-                {phase.method}
+                {t(`crisis.${phase.method.toLowerCase()}`) || phase.method}
               </span>
               <span style={{ fontSize: '13px', fontFamily: 'var(--font-display)', fontStyle: 'italic', color: '#a49abe' }}>
-                {breathState.secondsLeft} seconds
+                {breathState.secondsLeft} {t('crisis.seconds')}
               </span>
             </div>
           </div>
@@ -233,9 +247,8 @@ const CrisisOverlay = () => {
 
         {/* Motivational Text */}
         <div className="crisis-text-pulse" style={{ marginTop: '48px', textAlign: 'center', padding: '0 32px', maxWidth: '400px' }}>
-          <p style={{ fontSize: '18px', color: 'rgba(106, 90, 138, 0.7)', lineHeight: 1.6, margin: 0, fontWeight: 400 }}>
-            Focus only on the circle.<br/>
-            <span style={{ fontStyle: 'italic', color: '#8b9bc3' }}>Let your anxiety dissolve with each breath.</span>
+          <p style={{ fontSize: '18px', color: 'rgba(106, 90, 138, 0.7)', lineHeight: 1.6, margin: 0, fontWeight: 400, whiteSpace: 'pre-line' }}>
+            {t('crisis.focus_text')}
           </p>
         </div>
       </div>
@@ -331,7 +344,10 @@ const CrisisOverlay = () => {
           animation: crisis-text-pulse 4s ease-in-out infinite;
         }
       `}</style>
-    </div>
+      </motion.div>
+    </motion.div>
+      )}
+    </AnimatePresence>
   );
 };
 

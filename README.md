@@ -23,6 +23,9 @@ Love Ability Gym is not about finding love—it's about **building the capacity 
 ## ✨ Features
 
 - 🌐 **Bilingual Support** - Full English and Traditional Chinese (繁體中文)
+- ☁️ **Optional Cloud Sync** - Secure backup and multi-device sync via Supabase
+- 🎬 **Smooth Animations** - Seamless page transitions and expanding UI elements
+- ♿ **Accessible Design** - Screen reader friendly forms and semantic HTML
 - 🚀 **Instant Splash Screen** - Immediate load with smooth transitions
 - 📲 **PWA Ready** - Installable as a native app with offline capabilities
 - 📱 **Mobile-First Design** - Optimized for phone use
@@ -35,8 +38,9 @@ Love Ability Gym is not about finding love—it's about **building the capacity 
 **Your data belongs to you.**
 
 - **Local Storage**: All logs, journal entries, and progress are stored exclusively in your browser's `localStorage` (prefixed with `love_gym_`).
-- **No Backend**: This application is serverless. No data is ever sent to an external server or cloud database.
-- **Privacy First**: Since data never leaves your device, your emotional reflections remain completely private.
+- **Local Storage**: All logs, journal entries, and progress are stored primarily in your browser's `localStorage` (prefixed with `love_gym_`).
+- **Hybrid Sync**: If you choose to sign in, data is backed up to a private Supabase database for multi-device access.
+- **Privacy First**: Syncing is completely optional. If you don't sign in, data never leaves your device.
 - **⚠️ Important**: Clearing your browser cache or uninstalling the PWA will delete your data. We recommend backing up manually if needed.
 
 ## 🚀 Getting Started
@@ -97,8 +101,10 @@ love-ability-gym/
 - **Framework**: React 19
 - **Build Tool**: Vite
 - **Styling**: Vanilla CSS with CSS Variables
+- **Animation**: Framer Motion
 - **State Management**: React Context
-- **Storage**: LocalStorage (Offline-first, no backend)
+- **Storage**: LocalStorage (Offline-first) + Supabase (Optional Sync)
+- **Database**: PostgreSQL (via Supabase)
 - **Charts**: Custom SVG components
 - **Testing**: Vitest, React Testing Library
 - **PWA**: Vite PWA Plugin

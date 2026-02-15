@@ -14,6 +14,7 @@ The application is a **Client-Side Rendered (CSR)** Single Page Application (SPA
 | **Routing** | React Router v6 | Standard declarative routing for SPAs. |
 | **State** | React Context API | Sufficient for global state (User, Theme, Language) without Redux bloat. |
 | **Styling** | CSS Variables | Native, performant dynamic theming (e.g., color modes) without CSS-in-JS overhead. |
+| **Animation** | Framer Motion | Declarative animations for complex UI transitions (Shared Layout, Page Transitions). |
 | **Testing** | Vitest + RTL | Fast integration with Vite; standard component testing utilities. |
 | **PWA** | `vite-plugin-pwa` | Automates Service Worker generation and manifest management via Workbox. |
 
@@ -58,10 +59,10 @@ src/
 
 ## 💾 Data Persistence Strategy
 
-The application uses a **"Local-Only"** architecture. No user data is sent to a remote server, ensuring privacy and offline capability.
-
-### StorageService (`src/services/StorageService.js`)
-A singleton service that abstracts `localStorage` interactions.
+The application uses a **"Hybrid Local-First"** architecture. It functions 100% offline using `localStorage` but can optionally sync to the cloud when online.
+ 
+ ### StorageService (`src/services/StorageService.js`)
+ A singleton service that abstracts both `localStorage` and `Supabase` interactions.
 - **Namespace**: Keys are prefixed with `love_gym_` (e.g., `love_gym_logs`).
 - **Data Integrity**: Includes try-catch blocks to handle `JSON.parse` errors or `QuotaExceededError`.
 - **Caching**: Maintains an in-memory `cache` to reduce synchronous File I/O (localStorage access) during high-frequency operations.
@@ -69,7 +70,14 @@ A singleton service that abstracts `localStorage` interactions.
 **Key Methods**:
 - `saveLog(moduleName, data)`: Appends a new timestamped record.
 - `getLogs(moduleName)`: Retrieves and parses all records for a module.
-- `getStats()` / `saveStats()`: Manages user gamification data.
+ - `getStats()` / `saveStats()`: Manages user gamification data.
+ - `syncEntryToCloud(moduleName, entry)`: Attempts to push a single log to Supabase immediately (Fire-and-Forget).
+ - `syncWithCloud()`: Performs a full bi-directional sync (Pull -> Merge -> Push).
+ 
+ ### Sync Strategy
+ 1.  **Writes**: When a user saves a log, it is written to `localStorage` immediately. If the user is logged in, an async call tries to upsert it to Supabase `user_logs`.
+ 2.  **Reads**: The app *always* reads from `localStorage` for UI rendering to ensure instant load times.
+ 3.  **Conflict Resolution**: Uses a "Merge Union" strategy based on unique IDs (`client_id`). It does not currently handle modification conflicts (last write wins).
 
 ---
 
@@ -106,8 +114,43 @@ Translations are stored in `src/i18n/translations.js` as a nested JSON object.
 3. Add a switcher option in `Profile.jsx`.
 
 ---
-
-## 🚀 Performance Optimizations
+ 
+ ## 🎨 UI & Animations
+ 
+ ### 1. Page Transitions
+ We use `framer-motion`'s `AnimatePresence` with `mode="wait"` to create smooth transitions between routes.
+ - **PageTransition Component**: Wraps main route components to define entry/exit animations (fade + slide up).
+ 
+ ### 2. Shared Layout Animation (SOS)
+ The Crisis Mode (SOS) feature uses `layoutId` to create a seamless morphing effect.
+ - **Button to Overlay**: The floating SOS button and the full specific screen overlay share the same `layoutId="crisis-orb"`.
+ - **Auto-Animate**: Framer Motion automatically calculates the transform between the two states, making the button appear to "expand" into the page.
+ 
+ ---
+ 
+ ## ☁️ Backend (Supabase)
+ 
+ Although the app is client-heavy, it uses Supabase for optional features.
+ 
+ ### Database Schema (`user_logs`)
+ A generic JSONB storage table to support flexible data from different modules.
+ | Column | Type | Description |
+ |--------|------|-------------|
+ | `id` | uuid | Primary Key |
+ | `user_id` | uuid | Foreign Key to `auth.users` |
+ | `module_name` | text | Partition key (e.g., 'module1') |
+ | `data` | jsonb | The actual log content |
+ | `client_id` | text | Unique ID generated on client for deduping |
+ | `created_at` | timestamptz | Server timestamp |
+ 
+ ### Authentication
+ - Managed via Supabase Auth.
+ - Supports Email/Password signup.
+ - Session persistence handled by Supabase SDK.
+ 
+ ---
+ 
+ ## 🚀 Performance Optimizations
 
 ### 1. Hybrid Splash Screen
 Eliminates the "White Screen of Death" during React hydration.
@@ -139,7 +182,7 @@ Configured via `vite-plugin-pwa`.
 ## 🧪 Experimentation & Quality Assurance
 
 ### Testing Pyramid
-1.  **Unit Tests**: `src/**/*.test.jsx`. fast, component/function isolation.
+1.  **Unit Tests**: `src/**/*.test.jsx` (e.g., `CrisisOverlay.test.jsx`). Fast, component/function isolation.
 2.  **Integration Tests**: `src/integration/`. Verifies full user flows (Dashboard -> Check-In -> Profile).
 
 ### Test Commands

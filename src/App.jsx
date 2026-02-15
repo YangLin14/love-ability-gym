@@ -7,6 +7,8 @@ import BottomNav from './components/BottomNav';
 import LoadingFallback from './components/LoadingFallback';
 import SplashScreen from './components/SplashScreen';
 import PWAInstallPrompt from './components/PWAInstallPrompt';
+import { AnimatePresence } from 'framer-motion';
+import PageTransition from './components/PageTransition';
 
 // Lazy load pages
 const Dashboard = lazy(() => import('./pages/Dashboard'));
@@ -39,36 +41,50 @@ function AppContent() {
       </div>
 
       <Suspense fallback={<LoadingFallback />}>
-        <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/gym" element={<Gym />} />
-          <Route path="/onboarding" element={<Onboarding />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/settings" element={<Settings />} />
-          
-          {/* Module 1 Routes */}
-          {module1Routes.map(route => (
-            <Route key={route.path} path={route.path} element={route.element} />
-          ))}
+        <AnimatePresence mode="wait">
+          <Routes location={location} key={location.pathname}>
+            <Route path="/" element={
+              <PageTransition>
+                <Dashboard />
+              </PageTransition>
+            } />
+            <Route path="/gym" element={
+              <PageTransition>
+                <Gym />
+              </PageTransition>
+            } />
+            <Route path="/onboarding" element={<Onboarding />} />
+            <Route path="/profile" element={
+              <PageTransition>
+                <Profile />
+              </PageTransition>
+            } />
+            <Route path="/settings" element={<Settings />} />
+            
+            {/* Module 1 Routes */}
+            {module1Routes.map(route => (
+              <Route key={route.path} path={route.path} element={route.element} />
+            ))}
 
-          {/* Module 2 Routes */}
-          {module2Routes.map(route => (
-            <Route key={route.path} path={route.path} element={route.element} />
-          ))}
-          
-          {/* Module 3 Routes */}
-          {module3Routes.map(route => (
-            <Route key={route.path} path={route.path} element={route.element} />
-          ))}
-          {/* Module 4 Routes */}
-          {module4Routes.map(route => (
-            <Route key={route.path} path={route.path} element={route.element} />
-          ))}
-          {/* Module 5 Routes */}
-          {module5Routes.map(route => (
-            <Route key={route.path} path={route.path} element={route.element} />
-          ))}
-        </Routes>
+            {/* Module 2 Routes */}
+            {module2Routes.map(route => (
+              <Route key={route.path} path={route.path} element={route.element} />
+            ))}
+            
+            {/* Module 3 Routes */}
+            {module3Routes.map(route => (
+              <Route key={route.path} path={route.path} element={route.element} />
+            ))}
+            {/* Module 4 Routes */}
+            {module4Routes.map(route => (
+              <Route key={route.path} path={route.path} element={route.element} />
+            ))}
+            {/* Module 5 Routes */}
+            {module5Routes.map(route => (
+              <Route key={route.path} path={route.path} element={route.element} />
+            ))}
+          </Routes>
+        </AnimatePresence>
       </Suspense>
       <CrisisButton />
       {showNav && <BottomNav />}
