@@ -220,6 +220,97 @@ class StorageService {
   }
 
   /**
+   * Save User Profile and Sync
+   */
+  static async saveProfile(profile) {
+    localStorage.setItem('love_ability_profile', JSON.stringify(profile));
+    
+    // Sync to cloud as a special log entry
+    if (supabase) {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          await supabase.from('user_logs').upsert({
+            user_id: user.id,
+            module_name: 'profile', // Special module name
+            data: profile,
+            client_id: 'user_profile_data', // Fixed ID to ensure single-row update
+            created_at: new Date().toISOString()
+          }, { onConflict: 'client_id' });
+        }
+      } catch (e) {
+        console.warn("Profile sync failed", e);
+      }
+    }
+  }
+
+  /**
+   * Save User Stats and Sync
+   */
+  static async saveStats(stats) {
+    localStorage.setItem('love_ability_stats', JSON.stringify(stats));
+    
+    // Sync to cloud
+    if (supabase) {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          await supabase.from('user_logs').upsert({
+            user_id: user.id,
+            module_name: 'stats', // Special module name
+            data: stats,
+            client_id: 'user_stats_data', // Fixed ID
+            created_at: new Date().toISOString()
+          }, { onConflict: 'client_id' });
+        }
+      } catch (e) {
+        console.warn("Stats sync failed", e);
+      }
+    }
+  }
+
+  /**
+   * Sync Global Data (Profile & Stats) from Cloud
+   */
+  static async syncGlobalData() {
+    if (!supabase) return null;
+
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return null;
+
+      // Fetch profile and stats
+      const { data, error } = await supabase
+        .from('user_logs')
+        .select('*')
+        .in('module_name', ['profile', 'stats']);
+
+      if (error || !data) return null;
+
+      let syncedData = {};
+
+      data.forEach(row => {
+        if (row.module_name === 'profile') {
+           localStorage.setItem('love_ability_profile', JSON.stringify(row.data));
+           syncedData.profile = row.data;
+        }
+        if (row.module_name === 'stats') {
+           // We might want to merge stats carefully (e.g. take max XP), but for now last-write wins from cloud
+           // strictly speaking, we should compare timestamps or values, but let's assume cloud is truth on load
+           localStorage.setItem('love_ability_stats', JSON.stringify(row.data));
+           syncedData.stats = row.data;
+        }
+      });
+      
+      return syncedData;
+
+    } catch (e) {
+      console.error("Global sync failed", e);
+      return null;
+    }
+  }
+
+  /**
    * Clear ALL data
    */
   static clearAllData() {

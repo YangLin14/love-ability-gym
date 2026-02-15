@@ -19,6 +19,9 @@ vi.mock('../../services/StorageService', () => ({
   default: {
     getAllLogs: () => [],
     getStats: () => ({}),
+    saveProfile: vi.fn(),
+    saveStats: vi.fn(),
+    syncGlobalData: vi.fn().mockResolvedValue({}),
   },
 }));
 

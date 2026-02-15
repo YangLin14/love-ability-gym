@@ -2,6 +2,8 @@ import React, { createContext, useState, useContext, useEffect } from 'react';
 
 const UserContext = createContext();
 
+import StorageService from '../services/StorageService';
+ 
 export const UserProvider = ({ children }) => {
   // Load initial state from localStorage
   const [userStats, setUserStats] = useState(() => {
@@ -15,23 +17,36 @@ export const UserProvider = ({ children }) => {
     };
   });
 
-  const [userProfile, setUserProfile] = useState(() => {
-    const saved = localStorage.getItem('love_ability_profile');
-    return saved ? JSON.parse(saved) : {
-      name: 'User',
-      age: '',
-      avatar: '😊'
+  // Sync Logic: Check cloud on mount
+  useEffect(() => {
+    const sync = async () => {
+      const cloudData = await StorageService.syncGlobalData();
+      if (cloudData) {
+        if (cloudData.profile) setUserProfile(cloudData.profile);
+        if (cloudData.stats) setUserStats(cloudData.stats);
+      }
     };
-  });
+    sync();
+  }, []);
+ 
+   const [userProfile, setUserProfile] = useState(() => {
+     const saved = localStorage.getItem('love_ability_profile');
+     return saved ? JSON.parse(saved) : {
+       name: 'User',
+       age: '',
+       avatar: '😊'
+     };
+   });
 
   // Save changes to localStorage
-  useEffect(() => {
-    localStorage.setItem('love_ability_stats', JSON.stringify(userStats));
-  }, [userStats]);
-
-  useEffect(() => {
-    localStorage.setItem('love_ability_profile', JSON.stringify(userProfile));
-  }, [userProfile]);
+  // Save changes to localStorage AND Cloud via StorageService
+   useEffect(() => {
+     StorageService.saveStats(userStats);
+   }, [userStats]);
+ 
+   useEffect(() => {
+     StorageService.saveProfile(userProfile);
+   }, [userProfile]);
 
   const addXp = (amount) => {
     setUserStats(prev => {

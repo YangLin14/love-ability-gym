@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import StorageService from '../StorageService';
+import { supabase } from '../supabaseClient';
 
 describe('StorageService', () => {
     beforeEach(() => {
@@ -141,5 +142,95 @@ describe('StorageService', () => {
         const logs = StorageService.getLogs('module1');
         
         expect(logs).toEqual([]);
+    });
+
+    describe('Cloud Sync (Profile & Stats)', () => {
+        beforeEach(() => {
+            vi.clearAllMocks();
+            StorageService.clearAllData();
+        });
+
+        it('saveProfile saves to local and syncs to cloud', async () => {
+            const profile = { name: 'TestUser', avatar: '😎' };
+            const userId = 'user-123';
+            
+            // Mock Supabase Auth
+            supabase.auth.getUser.mockResolvedValue({ data: { user: { id: userId } } });
+            
+            // Mock Supabase Upsert
+            const upsertMock = vi.fn().mockResolvedValue({ error: null });
+            supabase.from.mockReturnValue({ upsert: upsertMock });
+
+            await StorageService.saveProfile(profile);
+
+            // Verify Local
+            expect(JSON.parse(localStorage.getItem('love_ability_profile'))).toEqual(profile);
+
+            // Verify Cloud
+            expect(supabase.from).toHaveBeenCalledWith('user_logs');
+            expect(upsertMock).toHaveBeenCalledWith(expect.objectContaining({
+                user_id: userId,
+                module_name: 'profile',
+                data: profile,
+                client_id: 'user_profile_data'
+            }), { onConflict: 'client_id' });
+        });
+
+        it('saveStats saves to local and syncs to cloud', async () => {
+            const stats = { xp: 100, level: 2 };
+            const userId = 'user-123';
+            
+            supabase.auth.getUser.mockResolvedValue({ data: { user: { id: userId } } });
+            const upsertMock = vi.fn().mockResolvedValue({ error: null });
+            supabase.from.mockReturnValue({ upsert: upsertMock });
+
+            await StorageService.saveStats(stats);
+
+            // Verify Local
+            expect(JSON.parse(localStorage.getItem('love_ability_stats'))).toEqual(stats);
+
+            // Verify Cloud
+            expect(upsertMock).toHaveBeenCalledWith(expect.objectContaining({
+                module_name: 'stats',
+                data: stats,
+                client_id: 'user_stats_data'
+            }), { onConflict: 'client_id' });
+        });
+
+        it('syncGlobalData fetches from cloud and updates localStorage', async () => {
+            const userId = 'user-123';
+            const cloudData = [
+                { module_name: 'profile', data: { name: 'CloudUser' } },
+                { module_name: 'stats', data: { xp: 500 } }
+            ];
+
+            // Mock User
+            supabase.auth.getUser.mockResolvedValue({ data: { user: { id: userId } } });
+
+            // Mock Select
+            const selectMock = vi.fn().mockReturnValue({
+                in: vi.fn().mockResolvedValue({ data: cloudData, error: null })
+            });
+            supabase.from.mockReturnValue({ select: selectMock });
+
+            const result = await StorageService.syncGlobalData();
+
+            expect(result.profile).toEqual(cloudData[0].data);
+            expect(result.stats).toEqual(cloudData[1].data);
+
+            // Verify Local Storage Updated
+            expect(JSON.parse(localStorage.getItem('love_ability_profile'))).toEqual(cloudData[0].data);
+            expect(JSON.parse(localStorage.getItem('love_ability_stats'))).toEqual(cloudData[1].data);
+        });
+
+        it('syncGlobalData handles offline/no-user gracefully', async () => {
+            // Mock No User
+            supabase.auth.getUser.mockResolvedValue({ data: { user: null } });
+
+            const result = await StorageService.syncGlobalData();
+
+            expect(result).toBeNull();
+            expect(supabase.from).not.toHaveBeenCalled();
+        });
     });
 });

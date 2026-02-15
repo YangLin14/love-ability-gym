@@ -18,6 +18,9 @@ vi.mock('../../services/StorageService', () => {
                 };
             }),
             notify: vi.fn(),
+            saveProfile: vi.fn(),
+            saveStats: vi.fn(),
+            syncGlobalData: vi.fn().mockResolvedValue({}),
             __triggerUpdate: () => listeners.forEach(cb => cb()) 
         }
     };

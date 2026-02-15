@@ -7,6 +7,9 @@ import StorageService from '../../services/StorageService';
 vi.mock('../../services/StorageService', () => ({
   default: {
     getAllLogs: vi.fn(), // Changed from getLogs to getAllLogs matching component
+    saveProfile: vi.fn(),
+    saveStats: vi.fn(),
+    syncGlobalData: vi.fn().mockResolvedValue({}),
   }
 }));
 

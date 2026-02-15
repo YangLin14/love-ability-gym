@@ -54,8 +54,12 @@ const DailyCheckIn = () => {
             ✅
           </div>
           <div>
-            <h4 style={{margin: '0 0 4px 0', color: 'var(--color-moss-dark)'}}>{t('dashboard.checkin_complete')}</h4>
-            <p style={{margin: 0, fontSize: '13px', color: '#666'}}>{t('dashboard.checkin_streak_keep')}</p>
+            <h4 style={{margin: '0 0 4px 0', color: 'var(--color-moss-dark)'}}>
+              {typeof t('dashboard.checkin_complete') === 'string' ? t('dashboard.checkin_complete') : 'Checked in!'}
+            </h4>
+            <p style={{margin: 0, fontSize: '13px', color: '#666'}}>
+              {typeof t('dashboard.checkin_streak_keep') === 'string' ? t('dashboard.checkin_streak_keep') : 'Great job!'}
+            </p>
           </div>
         </div>
       </div>

@@ -27,6 +27,9 @@ vi.mock('react-router-dom', async () => {
 vi.mock('../../services/StorageService', () => ({
     default: { 
         syncWithCloud: vi.fn(),
+        syncGlobalData: vi.fn().mockResolvedValue({}),
+        saveProfile: vi.fn(),
+        saveStats: vi.fn(),
         subscribe: vi.fn(() => vi.fn()),
         notify: vi.fn()
     }

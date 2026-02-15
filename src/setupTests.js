@@ -15,3 +15,17 @@ Object.defineProperty(window, 'matchMedia', {
     dispatchEvent: vi.fn(),
   })),
 });
+// Mock Supabase Client globally if needed, or per test file
+// But since StorageService imports 'supabase' constant, we need to mock the module
+vi.mock('./services/supabaseClient', () => ({
+  supabase: {
+    auth: {
+      getUser: vi.fn(),
+      signOut: vi.fn(),
+    },
+    from: vi.fn(() => ({
+      select: vi.fn(),
+      upsert: vi.fn(),
+    })),
+  }
+}));
