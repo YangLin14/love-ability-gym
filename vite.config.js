@@ -13,7 +13,10 @@ export default defineConfig({
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
 
       devOptions: {
-        enabled: true
+        enabled: true,
+        suppressWarnings: true,
+        navigateFallback: 'index.html',
+        type: 'module',
       },
       manifest: {
         name: 'Love Ability Gym',

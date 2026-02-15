@@ -1,3 +1,5 @@
+import { supabase } from './supabaseClient';
+
 const STORAGE_PREFIX = 'love_gym_';
 
 // Simple in-memory cache
@@ -17,7 +19,8 @@ class StorageService {
       const key = `${STORAGE_PREFIX}${moduleName}_logs`;
       const existing = this.getLogs(moduleName);
       const newEntry = {
-        id: Date.now(),
+        id: Date.now(), // Local ID
+        uuid: crypto.randomUUID(), // Global ID for sync
         createdAt: new Date().toISOString(),
         ...data
       };
@@ -27,12 +30,96 @@ class StorageService {
       
       // Update cache
       cache.logs[moduleName] = updated;
+
+      // Try to sync to cloud immediately if online
+      this.syncEntryToCloud(moduleName, newEntry);
       
       return newEntry;
     } catch (e) {
       console.error("Storage save failed", e);
       return null;
     }
+  }
+
+  /**
+   * Push a single entry to cloud (fire and forget)
+   */
+  static async syncEntryToCloud(moduleName, entry) {
+    if (!supabase) return;
+    
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      await supabase.from('user_logs').upsert({
+        user_id: user.id,
+        module_name: moduleName,
+        data: entry,
+        created_at: entry.createdAt,
+        client_id: entry.uuid || entry.id.toString()
+      }, { onConflict: 'client_id' });
+    } catch (e) {
+      console.warn("Cloud sync failed (offline?)", e);
+    }
+  }
+
+  /**
+   * Full Sync: Pull from cloud -> Merge -> Push local missing to cloud
+   */
+  static async syncWithCloud() {
+    if (!supabase) return;
+    
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      console.log('Starting cloud sync...');
+
+      // 1. Fetch all cloud logs
+      const { data: cloudLogs, error } = await supabase
+        .from('user_logs')
+        .select('*');
+      
+      if (error) throw error;
+
+      // 2. Merge Cloud -> Local
+      // Group cloud logs by module
+      const cloudMap = {};
+      cloudLogs.forEach(row => {
+        if (!cloudMap[row.module_name]) cloudMap[row.module_name] = [];
+        cloudMap[row.module_name].push(row.data);
+      });
+
+      // For each module, merge
+      Object.keys(cloudMap).forEach(moduleName => {
+        const localLogs = this.getLogs(moduleName);
+        const merged = this.mergeLogs(localLogs, cloudMap[moduleName]);
+        
+        // Save back to local
+        localStorage.setItem(`${STORAGE_PREFIX}${moduleName}_logs`, JSON.stringify(merged));
+        cache.logs[moduleName] = merged;
+      });
+
+      console.log('Cloud sync finished');
+
+    } catch (e) {
+      console.error('Full sync failed', e);
+    }
+  }
+
+  static mergeLogs(local, cloud) {
+    const map = new Map();
+    
+    // changing: prioritize cloud if conflict? or merge properly.
+    // For now, use UUID or ID to dedup.
+    [...local, ...cloud].forEach(item => {
+      const id = item.uuid || item.id;
+      if (!map.has(id)) {
+        map.set(id, item);
+      }
+    });
+
+    return Array.from(map.values()).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
   }
 
   /**
@@ -112,6 +199,7 @@ class StorageService {
   static clearAllData() {
     localStorage.clear();
     cache.logs = {};
+    if (supabase) supabase.auth.signOut();
   }
 }
 

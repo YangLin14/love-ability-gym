@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppProvider';
+import { useAuth } from '../context/AuthContext';
 import StorageService from '../services/StorageService';
 import RadarChart from '../components/RadarChart';
 import EmotionInsights from '../components/EmotionInsights';
 
 const Profile = () => {
   const { userProfile, setUserProfile, userStats, t, deferredPrompt, isIos, isStandalone, installPWA } = useApp();
+  const { user, signIn, signUp, signOut, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   
   const [isEditing, setIsEditing] = useState(false);
@@ -14,8 +16,14 @@ const Profile = () => {
   const [history, setHistory] = useState([]);
   const [stats, setStats] = useState({});
   const [assessment, setAssessment] = useState(null);
+  
+
 
   useEffect(() => {
+    loadData();
+  }, []);
+
+  const loadData = () => {
     // Load History
     const logs = StorageService.getAllLogs();
     setHistory(logs);
@@ -29,14 +37,15 @@ const Profile = () => {
     if (savedAssessment) {
       setAssessment(JSON.parse(savedAssessment));
     }
+  };
 
-  }, []);
+
 
   const handleSaveProfile = () => {
     setUserProfile(editForm);
     setIsEditing(false);
   };
-
+  
   // Helper to format date
   const formatDate = (isoString) => {
     return new Date(isoString).toLocaleString();
@@ -143,15 +152,22 @@ const Profile = () => {
     <div className="page-container" style={{paddingTop: '20px'}}>
       
       {/* Header / Nav */}
-      <div style={{display: 'flex', alignItems: 'center', marginBottom: '20px'}}>
-        <button onClick={() => navigate('/')} style={{background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer', padding: '0 10px 0 0'}}>
-          ←
-        </button>
-        <h2 style={{margin: 0}}>{t('profile.title')}</h2>
+      <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px'}}>
+        <div style={{display: 'flex', alignItems: 'center'}}>
+          <button onClick={() => navigate('/')} style={{background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer', padding: '0 10px 0 0'}}>
+            ←
+          </button>
+          <h2 style={{margin: 0}}>{t('profile.title')}</h2>
+        </div>
+
       </div>
+
+      {/* Cloud Sync / Auth Section */}
+
 
       {/* Profile Card */}
       <div className="fade-in" style={{
+        position: 'relative',
         background: 'white',
         borderRadius: '24px',
         padding: '24px',
@@ -162,6 +178,32 @@ const Profile = () => {
         alignItems: 'center',
         textAlign: 'center'
       }}>
+        {/* Settings Icon - Top Right of Card */}
+        <button 
+          onClick={() => navigate('/settings')}
+          style={{
+            position: 'absolute',
+            top: '20px',
+            right: '25px',
+            background: 'none',
+            border: 'none',
+            fontSize: '30px',
+            color: '#b0bec5',
+            cursor: 'pointer',
+            padding: '5px',
+            opacity: 0.7,
+            transition: 'opacity 0.2s',
+          }}
+          onMouseOver={(e) => e.currentTarget.style.opacity = '1'}
+          onMouseOut={(e) => e.currentTarget.style.opacity = '0.7'}
+          title="Settings"
+        >
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"> 
+            <path fillRule="evenodd" clipRule="evenodd" d="M5.07699 14.3816L3.59497 13.9054C3.24043 13.7915 3 13.4617 3 13.0894V10.9106C3 10.5383 3.24043 10.2085 3.59497 10.0946L5.07699 9.61845C5.52769 9.47366 5.77568 8.99091 5.63089 8.54021C5.60187 8.44991 5.55808 8.36505 5.50127 8.28908L4.86839 7.44272C4.61323 7.10148 4.64746 6.62461 4.94875 6.32332L6.32332 4.94875C6.62461 4.64746 7.10148 4.61323 7.44272 4.86839L8.28908 5.50127C8.6682 5.78476 9.20535 5.70724 9.48884 5.32812C9.54564 5.25216 9.58944 5.1673 9.61845 5.07699L10.0946 3.59497C10.2085 3.24043 10.5383 3 10.9106 3L13.0894 3C13.4617 3 13.7915 3.24043 13.9054 3.59497L14.3816 5.07699C14.5263 5.52769 15.0091 5.77568 15.4598 5.63089C15.5501 5.60187 15.635 5.55808 15.7109 5.50127L16.5573 4.86839C16.8985 4.61323 17.3754 4.64746 17.6767 4.94875L19.0512 6.32332C19.3525 6.62461 19.3868 7.10148 19.1316 7.44272L18.4987 8.28908C18.2152 8.6682 18.2928 9.20535 18.6719 9.48884C18.7478 9.54564 18.8327 9.58944 18.923 9.61845L20.405 10.0946C20.7596 10.2085 21 10.5383 21 10.9106V13.0894C21 13.4617 20.7596 13.7915 20.405 13.9054L18.923 14.3816C18.4723 14.5263 18.2243 15.0091 18.3691 15.4598C18.3981 15.5501 18.4419 15.635 18.4987 15.7109L19.1316 16.5573C19.3868 16.8985 19.3525 17.3754 19.0512 17.6767L17.6767 19.0512C17.3754 19.3525 16.8985 19.3868 16.5573 19.1316L15.7109 18.4987C15.3318 18.2152 14.7947 18.2928 14.5112 18.6719C14.4544 18.7478 14.4106 18.8327 14.3816 18.923L13.9054 20.405C13.7915 20.7596 13.4617 21 13.0894 21H10.9106C10.5383 21 10.2085 20.7596 10.0946 20.405L9.61845 18.923C9.47366 18.4723 8.99091 18.2243 8.54021 18.3691C8.44991 18.3981 8.36505 18.4419 8.28908 18.4987L7.44272 19.1316C7.10148 19.3868 6.62461 19.3525 6.32332 19.0512L4.94875 17.6767C4.64746 17.3754 4.61323 16.8985 4.86839 16.5573L5.50127 15.7109C5.78476 15.3318 5.70724 14.7947 5.32812 14.5112C5.25216 14.4544 5.1673 14.4106 5.07699 14.3816Z" stroke="var(--color-sage-dark)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/> 
+            <path fillRule="evenodd" clipRule="evenodd" d="M14.1213 9.87868C12.9497 8.70711 11.0503 8.70711 9.87868 9.87868C8.70711 11.0503 8.70711 12.9497 9.87868 14.1213C11.0503 15.2929 12.9497 15.2929 14.1213 14.1213C15.2929 12.9497 15.2929 11.0503 14.1213 9.87868Z" stroke="var(--color-sage-dark)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/> 
+          </svg>
+        </button>
+
         {isEditing ? (
           <div style={{width: '100%'}}>
              <div style={{marginBottom: '15px'}}>
@@ -217,55 +259,7 @@ const Profile = () => {
         )}
       </div>
 
-      {/* App Settings / PWA Install */}
-      {/* Show only if installable (Android deferred prompt exists OR iOS not standalone) */}
-      {((deferredPrompt) || (isIos && !isStandalone)) && (
-        <div 
-            onClick={installPWA}
-            style={{
-                background: 'var(--color-sage-light)', 
-                borderRadius: '16px', 
-                padding: '16px', 
-                marginBottom: '30px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                cursor: 'pointer',
-                border: '1px solid var(--color-border)',
-                boxShadow: 'var(--shadow-sm)'
-            }}
-        >
-            <div style={{display: 'flex', alignItems: 'center', gap: '16px'}}>
-                <div style={{
-                    width: '40px', 
-                    height: '40px', 
-                    background: 'white', 
-                    borderRadius: '12px', 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    justifyContent: 'center',
-                    fontSize: '20px'
-                }}>
-                    🌿
-                </div>
-                <div>
-                    <div style={{fontWeight: '600', fontSize: '16px', color: 'var(--color-sage-dark)'}}>{t('pwa.install_title') || 'Install App'}</div>
-                    <div style={{fontSize: '13px', color: 'var(--color-text-secondary)'}}>{t('pwa.install_desc') || 'Add to Home Screen'}</div>
-                </div>
-            </div>
-            <div style={{
-                background: 'var(--color-moss-dark)', 
-                color: 'white',
-                padding: '8px 16px', 
-                borderRadius: '20px', 
-                fontSize: '13px', 
-                fontWeight: '500',
-                boxShadow: '0 2px 8px rgba(94, 107, 92, 0.2)'
-            }}>
-                {isIos ? 'Show Guide' : 'Install'}
-            </div>
-        </div>
-      )}
+
 
       {/* Emotion Insights Report */}
       <section style={{marginBottom: '30px'}}>
@@ -370,33 +364,7 @@ const Profile = () => {
         )}
       </section>
 
-      {/* Danger Zone */}
-      <div style={{textAlign: 'center', marginTop: '50px', marginBottom: '30px'}}>
-        <button 
-          onClick={() => {
-            if (window.confirm(t('profile.reset_confirm'))) {
-               // We need to access resetData from context, but I need to destructure it first
-               // Since I can't easily change the destructuring at the top without viewing the file,
-               // I will assume I need to do that in a separate step or just do a manual clear which I can do here.
-               // Actually, let's just do manual clear here for safety if context isn't ready, 
-               // BUT I updated AppProvider, so I should update the destructuring at the top.
-               localStorage.clear();
-               window.location.reload();
-            }
-          }}
-          style={{
-            background: 'none',
-            border: '1px solid #ffcdd2',
-            color: '#c62828',
-            padding: '10px 20px',
-            borderRadius: '20px',
-            cursor: 'pointer',
-            fontSize: '14px'
-          }}
-        >
-          {t('profile.reset_btn')}
-        </button>
-      </div>
+
 
     </div>
   );

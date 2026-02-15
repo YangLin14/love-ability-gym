@@ -13,6 +13,7 @@ const Dashboard = lazy(() => import('./pages/Dashboard'));
 const Gym = lazy(() => import('./pages/Gym'));
 const Onboarding = lazy(() => import('./pages/Onboarding'));
 const Profile = lazy(() => import('./pages/Profile'));
+const Settings = lazy(() => import('./pages/Settings'));
 
 import { module1Routes } from './modules/module1/routes';
 import { module2Routes } from './modules/module2/routes';
@@ -43,6 +44,7 @@ function AppContent() {
           <Route path="/gym" element={<Gym />} />
           <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/settings" element={<Settings />} />
           
           {/* Module 1 Routes */}
           {module1Routes.map(route => (

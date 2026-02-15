@@ -398,6 +398,22 @@ export const translations = {
       insights_title: "📊 Emotion Insights",
       reset_btn: "Reset All Data",
       reset_confirm: "Are you sure? This will delete all your progress and history. This cannot be undone."
+    },
+    settings: {
+      title: "Settings",
+      cloud_sync: "Cloud Sync",
+      cloud_desc: "Sign in to backup your data",
+      logged_in: "Logged in",
+      sync_btn: "Sync",
+      sync_success: "Sync completed!",
+      email_placeholder: "Email",
+      password_placeholder: "Password",
+      login_btn: "Log In",
+      signup_btn: "Sign Up",
+      create_account: "Create an account",
+      have_account: "I have an account",
+      check_email: "Check your email for the confirmation link!",
+      danger_zone: "Danger Zone"
     }
   },
   zh: {
@@ -793,6 +809,22 @@ export const translations = {
       insights_title: "📊 情緒分析報告",
       reset_btn: "重置所有數據",
       reset_confirm: "確定要重置嗎？這將刪除所有進度和歷史記錄，且無法恢復。"
+    },
+    settings: {
+      title: "設置",
+      cloud_sync: "雲端同步",
+      cloud_desc: "登入以備份您的數據",
+      logged_in: "已登入",
+      sync_btn: "同步",
+      sync_success: "同步完成！",
+      email_placeholder: "電子郵件",
+      password_placeholder: "密碼",
+      login_btn: "登入",
+      signup_btn: "註冊",
+      create_account: "建立帳戶",
+      have_account: "我已有帳戶",
+      check_email: "請檢查您的電子郵件以獲取確認連結！",
+      danger_zone: "危險區域"
     }
   }
 };
