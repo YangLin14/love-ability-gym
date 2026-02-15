@@ -92,10 +92,7 @@ const SplashScreen = ({ onFinished }) => {
           animation: splash-pulse 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
         }
         
-        @media all and (display-mode: standalone) {
-          .splash-logo { border-radius: 20px; }
-          .splash-pulse-ring { border-radius: 24px; }
-        }
+
 
         @keyframes splash-pulse {
           0% { transform: scale(0.95); opacity: 0; }
