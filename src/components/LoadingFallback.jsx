@@ -3,11 +3,18 @@ import React from 'react';
 const LoadingFallback = () => {
   return (
     <div style={{
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      zIndex: 9999,
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'center',
       height: '100vh',
+      minHeight: '100dvh', // Modern mobile viewport fix
       width: '100vw',
       backgroundColor: '#f8f9fa',
       color: 'var(--color-moss-dark, #5c7c64)',

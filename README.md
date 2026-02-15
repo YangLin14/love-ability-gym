@@ -14,7 +14,7 @@ Love Ability Gym is not about finding love—it's about **building the capacity 
 
 | Module | Focus | Key Tools |
 |--------|-------|-----------|
-| **Module 1** | 覺察 (Awareness) | Emotion Scan, Story Buster, Rapid Awareness |
+| **Module 1** | 覺察 (Awareness) | Emotion Scan, Story Buster, Rapid Awareness, Attribution Shift, Happiness Scale, Time Travel |
 | **Module 2** | 表達 (Expression) | Draft Builder, Vocabulary Swap, Apology Builder |
 | **Module 3** | 共情 (Empathy) | Anger Decoder, Deep Listening Lab, Perspective Switcher |
 | **Module 4** | 允許 (Allowing) | Permission Slip, Reframing Tool |
@@ -23,6 +23,7 @@ Love Ability Gym is not about finding love—it's about **building the capacity 
 ## ✨ Features
 
 - 🌐 **Bilingual Support** - Full English and Traditional Chinese (繁體中文)
+- 📲 **PWA Ready** - Installable as a native app with offline capabilities
 - 📱 **Mobile-First Design** - Optimized for phone use
 - 📊 **Progress Tracking** - XP system and emotional weather charts
 - 🆘 **Crisis Mode** - Quick-access breathing exercises for emotional emergencies
@@ -83,12 +84,14 @@ love-ability-gym/
 
 ## 🛠️ Tech Stack
 
-- **Framework**: React 18
+- **Framework**: React 19
 - **Build Tool**: Vite
 - **Styling**: Vanilla CSS with CSS Variables
 - **State Management**: React Context
 - **Storage**: LocalStorage
 - **Charts**: Custom SVG components
+- **Testing**: Vitest, React Testing Library
+- **PWA**: Vite PWA Plugin
 
 ## 📄 License
 
