@@ -191,46 +191,51 @@ const Settings = () => {
         )}
       </div>
 
-       {/* PWA Install */}
-       {((deferredPrompt) || (isIos && !isStandalone)) && (
-        <div 
-            onClick={installPWA}
-            style={{
-                background: 'var(--color-sage-light)', 
-                borderRadius: '16px', 
-                padding: '16px', 
-                marginBottom: '20px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                cursor: 'pointer',
-                border: '1px solid var(--color-border)',
-                boxShadow: 'var(--shadow-sm)'
-            }}
-        >
-            <div style={{display: 'flex', alignItems: 'center', gap: '16px'}}>
-                <div style={{
-                    width: '40px', height: '40px', background: 'white', borderRadius: '12px',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px'
-                }}>🌿</div>
-                <div>
-                    <div style={{fontWeight: '600', fontSize: '16px', color: 'var(--color-sage-dark)'}}>{t('pwa.install_title') || 'Install App'}</div>
-                    <div style={{fontSize: '13px', color: 'var(--color-text-secondary)'}}>{t('pwa.install_desc') || 'Add to Home Screen'}</div>
-                </div>
-            </div>
-            <div style={{
-                background: 'var(--color-moss-dark)', 
-                color: 'white',
-                padding: '8px 16px', 
-                borderRadius: '20px', 
-                fontSize: '13px', 
-                fontWeight: '500',
-                boxShadow: '0 2px 8px rgba(94, 107, 92, 0.2)'
-            }}>
-                {isIos ? 'Show Guide' : 'Install'}
-            </div>
-        </div>
-      )}
+      {/* PWA Install */}
+       {((deferredPrompt) || (isIos && !isStandalone)) ? (
+         <div 
+             onClick={installPWA}
+             style={{
+                 background: 'var(--color-sage-light)', 
+                 borderRadius: '16px', 
+                 padding: '16px', 
+                 marginBottom: '20px',
+                 display: 'flex',
+                 alignItems: 'center',
+                 justifyContent: 'space-between',
+                 cursor: 'pointer',
+                 border: '1px solid var(--color-border)',
+                 boxShadow: 'var(--shadow-sm)'
+             }}
+         >
+             <div style={{display: 'flex', alignItems: 'center', gap: '16px'}}>
+                 <div style={{
+                     width: '40px', height: '40px', background: 'white', borderRadius: '12px',
+                     display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px'
+                 }}>🌿</div>
+                 <div>
+                     <div style={{fontWeight: '600', fontSize: '16px', color: 'var(--color-sage-dark)'}}>{t('pwa.install_title') || 'Install App'}</div>
+                     <div style={{fontSize: '13px', color: 'var(--color-text-secondary)'}}>{t('pwa.install_desc') || 'Add to Home Screen'}</div>
+                 </div>
+             </div>
+             <div style={{
+                 background: 'var(--color-moss-dark)', 
+                 color: 'white',
+                 padding: '8px 16px', 
+                 borderRadius: '20px', 
+                 fontSize: '13px', 
+                 fontWeight: '500',
+                 boxShadow: '0 2px 8px rgba(94, 107, 92, 0.2)'
+             }}>
+                 {isIos ? 'Show Guide' : 'Install'}
+             </div>
+         </div>
+       ) : (
+         <div style={{textAlign: 'center', marginBottom: '20px', fontSize: '12px', color: '#90a4ae'}}>
+             {!isStandalone && <span>(Install option not available on this device/browser)</span>}
+             {isStandalone && <span>(App is installed)</span>}
+         </div>
+       )}
 
       {/* Danger Zone */}
       <div style={{marginTop: '40px'}}>

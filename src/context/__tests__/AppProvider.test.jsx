@@ -4,7 +4,25 @@ import { AppProvider, useApp } from '../AppProvider';
 import React from 'react';
 
 // Wrapper for renderHook
-const wrapper = ({ children }) => <AppProvider>{children}</AppProvider>;
+const wrapper = ({ children }) => (
+  <AppProvider>
+      {children}
+  </AppProvider>
+);
+
+// Mock AuthContext if not already mocked by AppProvider's internal structure
+// Since AppProvider internally renders AuthProvider, we might need to mock supabase or the context hook if it's used directly.
+// But wait, AppProvider IMPORTS AuthProvider.
+// If we want to test AppProvider, we should probably mock the AuthProvider module or the supabase client it uses.
+// Let's mock the AuthContext module to avoid real supabase calls during these tests.
+vi.mock('../AuthContext', async () => {
+    const actual = await vi.importActual('../AuthContext');
+    return {
+        ...actual,
+        AuthProvider: ({ children }) => <div>{children}</div>,
+        useAuth: () => ({ user: { id: 'test-user' }, loading: false })
+    };
+});
 
 describe('AppProvider PWA Logic', () => {
   let originalUserAgent;

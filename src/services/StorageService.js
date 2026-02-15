@@ -73,8 +73,10 @@ class StorageService {
     if (!supabase) return;
     
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      const { data: authData, error: authError } = await supabase.auth.getUser();
+      if (authError || !authData?.user) return;
+      
+      const user = authData.user;
 
       await supabase.from('user_logs').upsert({
         user_id: user.id,
@@ -95,8 +97,10 @@ class StorageService {
     if (!supabase) return;
     
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      const { data: authData, error: authError } = await supabase.auth.getUser();
+      if (authError || !authData?.user) return;
+      
+      const user = authData.user;
 
       console.log('Starting cloud sync...');
 
@@ -228,7 +232,10 @@ class StorageService {
     // Sync to cloud as a special log entry
     if (supabase) {
       try {
-        const { data: { user } } = await supabase.auth.getUser();
+        const { data: authData, error: authError } = await supabase.auth.getUser();
+        if (authError || !authData?.user) return;
+
+        const user = authData.user;
         if (user) {
           await supabase.from('user_logs').upsert({
             user_id: user.id,
@@ -253,7 +260,10 @@ class StorageService {
     // Sync to cloud
     if (supabase) {
       try {
-        const { data: { user } } = await supabase.auth.getUser();
+        const { data: authData, error: authError } = await supabase.auth.getUser();
+        if (authError || !authData?.user) return;
+
+        const user = authData.user;
         if (user) {
           await supabase.from('user_logs').upsert({
             user_id: user.id,
@@ -276,8 +286,10 @@ class StorageService {
     if (!supabase) return null;
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return null;
+      const { data: authData, error: authError } = await supabase.auth.getUser();
+      if (authError || !authData?.user) return null;
+      
+      const user = authData.user;
 
       // Fetch profile and stats
       const { data, error } = await supabase

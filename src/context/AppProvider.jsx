@@ -1,6 +1,7 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { LanguageProvider, useLanguage } from './LanguageContext';
 import { UserProvider, useUser } from './UserContext';
+import { AuthProvider, useAuth } from './AuthContext';
 
 const AppContext = createContext();
 
@@ -16,7 +17,8 @@ const AppStateProvider = ({ children }) => {
   useEffect(() => {
     // Check Platform
     const userAgent = window.navigator.userAgent.toLowerCase();
-    const ios = /iphone|ipad|ipod/.test(userAgent);
+    const isIpad = /macintosh/.test(userAgent) && 'ontouchend' in document;
+    const ios = /iphone|ipad|ipod/.test(userAgent) || isIpad;
     setIsIos(ios);
 
     const standalone = ('standalone' in window.navigator) && (window.navigator.standalone) || window.matchMedia('(display-mode: standalone)').matches;
@@ -70,11 +72,13 @@ const AppStateProvider = ({ children }) => {
 export const AppProvider = ({ children }) => {
   return (
     <LanguageProvider>
-      <UserProvider>
-        <AppStateProvider>
-          {children}
-        </AppStateProvider>
-      </UserProvider>
+        <AuthProvider>
+          <UserProvider>
+            <AppStateProvider>
+              {children}
+            </AppStateProvider>
+          </UserProvider>
+        </AuthProvider>
     </LanguageProvider>
   );
 };
@@ -83,6 +87,7 @@ export const useApp = () => {
   const appContext = useContext(AppContext);
   const languageContext = useLanguage();
   const userContext = useUser();
+  const authContext = useAuth();
 
   if (!appContext) {
     throw new Error('useApp must be used within an AppProvider');
@@ -92,6 +97,6 @@ export const useApp = () => {
   return {
     ...appContext,
     ...languageContext,
-    ...userContext
+    ...userContext,
   };
 };

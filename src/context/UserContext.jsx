@@ -1,4 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
+import { useAuth } from './AuthContext';
 
 const UserContext = createContext();
 
@@ -17,17 +18,25 @@ export const UserProvider = ({ children }) => {
     };
   });
 
-  // Sync Logic: Check cloud on mount
+  const { user } = useAuth();
+
+  // Sync Logic: Check cloud when user is available
   useEffect(() => {
     const sync = async () => {
-      const cloudData = await StorageService.syncGlobalData();
-      if (cloudData) {
-        if (cloudData.profile) setUserProfile(cloudData.profile);
-        if (cloudData.stats) setUserStats(cloudData.stats);
+      if (user) {
+        // Sync Global Data (Profile, Stats)
+        const cloudData = await StorageService.syncGlobalData();
+        if (cloudData) {
+          if (cloudData.profile) setUserProfile(cloudData.profile);
+          if (cloudData.stats) setUserStats(cloudData.stats);
+        }
+        
+        // Sync All Logs
+        await StorageService.syncWithCloud();
       }
     };
     sync();
-  }, []);
+  }, [user]);
  
    const [userProfile, setUserProfile] = useState(() => {
      const saved = localStorage.getItem('love_ability_profile');
