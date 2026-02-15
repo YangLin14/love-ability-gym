@@ -11,6 +11,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=Noto+Sans:wght@300;400;500;700&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <link rel="preload" as="image" href="/logo.png" />
   </head>
   <body>
     <div id="root">
@@ -31,6 +32,12 @@
           animation: shell-pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
         }
         .shell-text { margin-top: 28px; font-size: 18px; font-weight: 400; letter-spacing: 0.3px; opacity: 0.85; font-family: "Newsreader", Georgia, serif; font-style: italic; }
+        
+        @media all and (display-mode: standalone) {
+          .shell-logo { border-radius: 20px; }
+          .shell-pulse-ring { border-radius: 24px; }
+        }
+
         @keyframes shell-pulse-ring {
           0% { transform: scale(0.95); opacity: 0; }
           50% { transform: scale(1.1); opacity: 1; border-width: 2px; }

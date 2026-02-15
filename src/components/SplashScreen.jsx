@@ -51,11 +51,11 @@ const SplashScreen = ({ onFinished }) => {
         <img
           src="/logo.png"
           alt="Love Ability Gym"
+          className="splash-logo"
           style={{
             width: '80px',
             height: '80px',
             objectFit: 'cover',
-            borderRadius: '50%',
             boxShadow: '0 4px 20px rgba(92, 124, 100, 0.2)'
           }}
         />
@@ -81,6 +81,9 @@ const SplashScreen = ({ onFinished }) => {
           align-items: center;
           justify-content: center;
         }
+        .splash-logo {
+          border-radius: 50%;
+        }
         .splash-pulse-ring {
           position: absolute;
           top: 0; left: 0; right: 0; bottom: 0;
@@ -88,6 +91,12 @@ const SplashScreen = ({ onFinished }) => {
           border: 2px solid var(--color-moss-dark, #5c7c64);
           animation: splash-pulse 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
         }
+        
+        @media all and (display-mode: standalone) {
+          .splash-logo { border-radius: 20px; }
+          .splash-pulse-ring { border-radius: 24px; }
+        }
+
         @keyframes splash-pulse {
           0% { transform: scale(0.95); opacity: 0; }
           50% { transform: scale(1.1); opacity: 1; border-width: 2px; }
