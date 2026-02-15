@@ -27,7 +27,7 @@ const BottomNav = () => {
       backdropFilter: 'blur(20px)',
       WebkitBackdropFilter: 'blur(20px)',
       borderTop: '1px solid rgba(240, 242, 239, 0.8)',
-      paddingBottom: 'env(safe-area-inset-bottom, 20px)',
+      paddingBottom: 'calc(env(safe-area-inset-bottom, 20px) + 12px)',
       paddingTop: '12px',
       paddingLeft: '32px',
       paddingRight: '32px',
