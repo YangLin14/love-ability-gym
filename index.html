@@ -13,7 +13,38 @@
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <style>
+        body { margin: 0; background-color: #f8f9fa; }
+        #loading-shell {
+          position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 9999;
+          display: flex; flex-direction: column; align-items: center; justify-content: center;
+          height: 100vh; min-height: 100dvh; width: 100vw;
+          background-color: #f8f9fa; color: #5c7c64;
+          font-family: "Noto Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+        .shell-logo-container { position: relative; display: flex; align-items: center; justify-content: center; }
+        .shell-logo { width: 80px; height: 80px; object-fit: cover; border-radius: 50%; box-shadow: 0 4px 20px rgba(92, 124, 100, 0.2); }
+        .shell-pulse-ring {
+          position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+          border-radius: 50%; border: 2px solid #5c7c64;
+          animation: shell-pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+        }
+        .shell-text { margin-top: 24px; font-size: 16px; font-weight: 500; letter-spacing: 0.5px; opacity: 0.8; }
+        @keyframes shell-pulse-ring {
+          0% { transform: scale(0.95); opacity: 0; }
+          50% { transform: scale(1.1); opacity: 1; border-width: 2px; }
+          100% { transform: scale(1.5); opacity: 0; border-width: 0px; }
+        }
+      </style>
+      <div id="loading-shell">
+        <div class="shell-logo-container">
+          <img src="/logo.png" alt="Love Ability Gym" class="shell-logo" />
+          <div class="shell-pulse-ring"></div>
+        </div>
+        <p class="shell-text">Love Ability Gym</p>
+      </div>
+    </div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
