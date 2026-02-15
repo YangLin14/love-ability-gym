@@ -1,6 +1,7 @@
 import React from 'react';
 import { useLanguage } from '@/context/LanguageContext';
 import { useEmotionAnalysis } from '@/hooks/useEmotionAnalysis';
+import SimpleLineChart from '@/components/SimpleLineChart';
 
 /**
  * EmotionInsights Component
@@ -142,6 +143,23 @@ const EmotionInsights = ({ period = 14 }) => {
               </div>
             ))}
           </div>
+        </div>
+      )}
+
+      {/* Daily Fluctuations Chart */}
+      {insights.dailyFluctuations && (
+        <div style={styles.section}>
+          <h4 style={styles.sectionTitle}>
+            📈 {language === 'zh' ? '情緒起伏 (過去14天)' : 'Emotional Fluctuations (14 Days)'}
+          </h4>
+          <div style={{ width: '100%', height: '200px', marginBottom: '20px' }}>
+             <SimpleLineChart data={insights.dailyFluctuations} />
+          </div>
+          <p style={{fontSize: '12px', color: '#999', textAlign: 'center', marginBottom: '20px'}}>
+            {language === 'zh' 
+              ? '此圖表結合了您的快速覺察分數與情緒掃描強度。'
+              : 'This chart combines your Rapid Awareness scores and Emotion Scan intensities.'}
+          </p>
         </div>
       )}
 

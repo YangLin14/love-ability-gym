@@ -5,13 +5,13 @@ import '@testing-library/jest-dom';
 
 // Mock child components that are complex / canvas-based
 vi.mock('../../components/RadarChart', () => ({
-  default: () => <div data-testid="radar-chart">RadarChart</div>,
+  default: (props) => <div data-testid="radar-chart" data-props={JSON.stringify(props)}>RadarChart</div>,
 }));
 vi.mock('../../components/SimpleLineChart', () => ({
-  default: () => <div data-testid="line-chart">SimpleLineChart</div>,
+  default: (props) => <div data-testid="line-chart" data-props={JSON.stringify(props)}>SimpleLineChart</div>,
 }));
 vi.mock('../../components/EmotionInsights', () => ({
-  default: () => <div data-testid="emotion-insights">EmotionInsights</div>,
+  default: (props) => <div data-testid="emotion-insights" data-props={JSON.stringify(props)}>EmotionInsights</div>,
 }));
 
 // Mock StorageService
@@ -81,6 +81,16 @@ describe('Function Logic', () => {
     expect(screen.getByText('Age')).toBeInTheDocument();
 
     // 顯示 Save 按鈕
+    expect(screen.getByText(/Save Changes/i)).toBeInTheDocument();
+  });
+
+  it('點擊鉛筆圖示進入編輯模式', () => {
+    render(<Profile />);
+    
+    // 點擊鉛筆
+    fireEvent.click(screen.getByText('✏️'));
+
+    // 驗證進入編輯模式
     expect(screen.getByText(/Save Changes/i)).toBeInTheDocument();
   });
 

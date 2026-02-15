@@ -123,6 +123,55 @@ export const useEmotionAnalysis = (period = 14) => {
       cat.category === dominantCategory?.[0] || cat.category_zh === dominantCategory?.[0]
     );
 
+    // Calculate Daily Fluctuations (Last 14 days)
+    const dailyFluctuations = [];
+    for (let i = period - 1; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      const dateStr = d.toLocaleDateString();
+      
+      // Find logs for this day
+      const dayLogs = recentLogs.filter(l => new Date(l.timestamp).toLocaleDateString() === dateStr);
+      
+      let maxScore = 0;
+      let dominantEmotionForDay = '';
+
+      if (dayLogs.length > 0) {
+        // Map logs to scores
+        const scores = dayLogs.map(l => {
+           let score = 0;
+           let emo = '';
+           
+           if (l.tool === 'Rapid Awareness' && l.score !== undefined) {
+             score = l.score;
+             emo = l.emotion;
+           } else if (l.type === 'emotion_scan' && l.intensity) {
+             // Determine polarity based on category
+             const isJoy = l.category === 'Joy' || l.category_zh === '喜悅';
+             score = isJoy ? l.intensity : -l.intensity;
+             emo = l.emotion;
+           }
+           
+           return { score, emo };
+        }).filter(s => s.score !== 0); // Filter out invalid entries if any
+
+        if (scores.length > 0) {
+            // Find max absolute score
+            const maxAbs = Math.max(...scores.map(s => Math.abs(s.score)));
+            const maxEntry = scores.find(s => Math.abs(s.score) === maxAbs);
+            maxScore = maxEntry ? maxEntry.score : 0;
+            dominantEmotionForDay = maxEntry ? maxEntry.emo : '';
+        }
+      }
+
+      dailyFluctuations.push({
+        label: `${d.getMonth() + 1}/${d.getDate()}`,
+        score: maxScore,
+        emotion: dominantEmotionForDay,
+        fullDate: dateStr
+      });
+    }
+
     setInsights({
       totalRecords: recentLogs.length,
       topEmotions,
@@ -132,6 +181,7 @@ export const useEmotionAnalysis = (period = 14) => {
       dominantCategory: categoryInfo,
       dominantCategoryCount: dominantCategory?.[1] || 0,
       avgIntensity,
+      dailyFluctuations,
       period
     });
     

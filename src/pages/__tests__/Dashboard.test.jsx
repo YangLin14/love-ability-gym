@@ -1,55 +1,97 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '../../test-utils';
 import Dashboard from '../Dashboard';
 import '@testing-library/jest-dom';
 
-describe('Frontend Elements', () => {
-  it('渲染基本元素', () => {
-    render(<Dashboard />);
+// Mock useNavigate
+const mockNavigate = vi.fn();
 
-    // 顯示標題 "Gym Dashboard"
-    expect(screen.getByText(/Gym Dashboard/i)).toBeInTheDocument();
-
-    // 顯示 Focus Quote 標題
-    expect(screen.getByText(/Today's Focus/i)).toBeInTheDocument();
-
-    // 顯示 "The Garden" 標題
-    expect(screen.getByText(/The Garden/i)).toBeInTheDocument();
-  });
-
-  it('顯示使用者等級', () => {
-    render(<Dashboard />);
-    expect(screen.getByText(/Lv\. 1/i)).toBeInTheDocument();
-  });
+vi.mock('react-router-dom', async (importOriginal) => {
+    const actual = await importOriginal();
+    return {
+        ...actual,
+        useNavigate: () => mockNavigate,
+    };
 });
 
-describe('Function Logic', () => {
-  it('顯示 5 個模組卡片', () => {
-    render(<Dashboard />);
-
-    // 4 module cards in grid + 1 full-width
-    expect(screen.getByText(/Awareness/i)).toBeInTheDocument();
-    expect(screen.getByText(/Expression/i)).toBeInTheDocument();
-    expect(screen.getByText(/Empathy/i)).toBeInTheDocument();
-    expect(screen.getByText(/Allowing/i)).toBeInTheDocument();
-    expect(screen.getByText(/Influence/i)).toBeInTheDocument();
+describe('Dashboard', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    localStorage.clear();
   });
 
-  it('顯示 Assessment 卡片 (無評估資料時)', () => {
-    render(<Dashboard />);
+  describe('Frontend Elements', () => {
+    it('renders basic elements', () => {
+      render(<Dashboard />);
 
-    expect(screen.getByText(/Start Here/i)).toBeInTheDocument();
-    expect(screen.getByText(/Love Ability Assessment/i)).toBeInTheDocument();
+      // Title
+      expect(screen.getByText(/Gym Dashboard/i)).toBeInTheDocument();
+
+      // Focus Quote
+      expect(screen.getByText(/Today's Focus/i)).toBeInTheDocument();
+
+      // "The Garden"
+      expect(screen.getByText(/The Garden/i)).toBeInTheDocument();
+    });
+
+    it('shows user level', () => {
+      render(<Dashboard />);
+      expect(screen.getByText(/Lv\. 1/i)).toBeInTheDocument();
+    });
   });
 
-  it('切換語言', () => {
-    render(<Dashboard />);
+  describe('Function Logic', () => {
+    it('shows 5 module cards', () => {
+      render(<Dashboard />);
 
-    const toggleBtn = screen.getByText('CN');
-    expect(toggleBtn).toBeInTheDocument();
+      expect(screen.getByText(/Awareness/i)).toBeInTheDocument();
+      expect(screen.getByText(/Expression/i)).toBeInTheDocument();
+      expect(screen.getByText(/Empathy/i)).toBeInTheDocument();
+      expect(screen.getByText(/Allowing/i)).toBeInTheDocument();
+      expect(screen.getByText(/Influence/i)).toBeInTheDocument();
+    });
 
-    fireEvent.click(toggleBtn);
+    it('navigates to module when card is clicked', () => {
+      render(<Dashboard />);
+      
+      const awarenessCard = screen.getByText(/Awareness/i).closest('button');
+      fireEvent.click(awarenessCard);
+      
+      expect(mockNavigate).toHaveBeenCalledWith('/gym?module=module1');
+    });
 
-    expect(screen.getByText('EN')).toBeInTheDocument();
+    it('shows Assessment card when no data is saved', () => {
+      render(<Dashboard />);
+
+      expect(screen.getByText(/Start Here/i)).toBeInTheDocument();
+      expect(screen.getByText(/Love Ability Assessment/i)).toBeInTheDocument();
+    });
+
+    it('navigates to onboarding when Assessment card is clicked', () => {
+        render(<Dashboard />);
+        
+        const assessmentCard = screen.getByText(/Start Here/i).closest('.glass-panel');
+        fireEvent.click(assessmentCard);
+        
+        expect(mockNavigate).toHaveBeenCalledWith('/onboarding');
+    });
+
+    it('hides Assessment card when data exists in localStorage', () => {
+      localStorage.setItem('user_assessment', JSON.stringify({ completed: true }));
+      render(<Dashboard />);
+
+      expect(screen.queryByText(/Start Here/i)).not.toBeInTheDocument();
+    });
+
+    it('toggles language', () => {
+      render(<Dashboard />);
+
+      const toggleBtn = screen.getByText('CN');
+      expect(toggleBtn).toBeInTheDocument();
+
+      fireEvent.click(toggleBtn);
+
+      expect(screen.getByText('EN')).toBeInTheDocument();
+    });
   });
 });

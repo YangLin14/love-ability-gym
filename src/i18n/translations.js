@@ -1,7 +1,16 @@
 export const translations = {
   en: {
     dashboard: {
+      checkin_title: 'How are you feeling properly?',
+      checkin_sub: 'Boost your emotional granularity',
+      checkin_cta: 'Scan my emotions',
+      checkin_complete: 'Checked in for today!',
+      checkin_streak_keep: 'Great job keeping your streak!',
       greeting: "Hello, User",
+      intro_label: "Gym Dashboard",
+      morning: "Good Morning,",
+      afternoon: "Good Afternoon,",
+      evening: "Good Evening,",
       subtitle: "Let's turn inward.",
       focus_title: "Today's Focus",
       focus_quote: '"You change, the world changes."',
@@ -22,7 +31,15 @@ export const translations = {
       },
       empty_weather: "No data yet. Log your first emotion!"
     },
+    pwa: {
+      install_title: "Install App",
+      install_desc: "Add to home screen for a better experience",
+      install_btn: "Install Now",
+      ios_step1: "Tap the 'Share' button",
+      ios_step2: "Select 'Add to Home Screen'"
+    },
     common: {
+      user: "User",
       all: "All",
       back: "Back",
       save: "Save",
@@ -385,7 +402,16 @@ export const translations = {
   },
   zh: {
     dashboard: {
+      checkin_title: '你現在感覺如何？',
+      checkin_sub: '提升你的情緒顆粒度',
+      checkin_cta: '掃描我的情緒',
+      checkin_complete: '今日已完成簽到！',
+      checkin_streak_keep: '很棒！保持住了連續紀錄！',
       greeting: "你好，修煉者",
+      intro_label: "心靈健身房",
+      morning: "早安，",
+      afternoon: "午安，",
+      evening: "晚安，",
       subtitle: "向內找，修煉愛的能力。",
       focus_title: "今日焦點",
       focus_quote: '"你變了，世界就變了。"',
@@ -406,7 +432,15 @@ export const translations = {
       },
       empty_weather: "暫無數據。記錄你的第一個情緒吧！"
     },
+    pwa: {
+      install_title: "安裝應用程式",
+      install_desc: "添加到主畫面以獲得最佳體驗",
+      install_btn: "立即安裝",
+      ios_step1: "點擊 '分享' 按鈕",
+      ios_step2: "選擇 '加入主畫面'"
+    },
     common: {
+      user: "修煉者",
       all: "全部",
       back: "返回",
       save: "保存",

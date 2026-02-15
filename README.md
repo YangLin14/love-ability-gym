@@ -23,11 +23,21 @@ Love Ability Gym is not about finding love—it's about **building the capacity 
 ## ✨ Features
 
 - 🌐 **Bilingual Support** - Full English and Traditional Chinese (繁體中文)
+- 🚀 **Instant Splash Screen** - Immediate load with smooth transitions
 - 📲 **PWA Ready** - Installable as a native app with offline capabilities
 - 📱 **Mobile-First Design** - Optimized for phone use
 - 📊 **Progress Tracking** - XP system and emotional weather charts
 - 🆘 **Crisis Mode** - Quick-access breathing exercises for emotional emergencies
 - 💾 **Local Storage** - All data stored privately on your device
+
+## 🔒 Data & Privacy
+
+**Your data belongs to you.**
+
+- **Local Storage**: All logs, journal entries, and progress are stored exclusively in your browser's `localStorage` (prefixed with `love_gym_`).
+- **No Backend**: This application is serverless. No data is ever sent to an external server or cloud database.
+- **Privacy First**: Since data never leaves your device, your emotional reflections remain completely private.
+- **⚠️ Important**: Clearing your browser cache or uninstalling the PWA will delete your data. We recommend backing up manually if needed.
 
 ## 🚀 Getting Started
 
@@ -88,7 +98,7 @@ love-ability-gym/
 - **Build Tool**: Vite
 - **Styling**: Vanilla CSS with CSS Variables
 - **State Management**: React Context
-- **Storage**: LocalStorage
+- **Storage**: LocalStorage (Offline-first, no backend)
 - **Charts**: Custom SVG components
 - **Testing**: Vitest, React Testing Library
 - **PWA**: Vite PWA Plugin

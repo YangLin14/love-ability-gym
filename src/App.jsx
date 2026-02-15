@@ -6,6 +6,7 @@ import CrisisOverlay from './components/CrisisOverlay';
 import BottomNav from './components/BottomNav';
 import LoadingFallback from './components/LoadingFallback';
 import SplashScreen from './components/SplashScreen';
+import PWAInstallPrompt from './components/PWAInstallPrompt';
 
 // Lazy load pages
 const Dashboard = lazy(() => import('./pages/Dashboard'));
@@ -69,6 +70,7 @@ function AppContent() {
       </Suspense>
       <CrisisButton />
       {showNav && <BottomNav />}
+      <PWAInstallPrompt />
     </div>
   );
 }

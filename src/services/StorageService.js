@@ -47,7 +47,7 @@ class StorageService {
 
       const key = `${STORAGE_PREFIX}${moduleName}_logs`;
       const raw = localStorage.getItem(key);
-      const parsed = raw ? JSON.parse(raw) : [];
+      const parsed = (raw && raw !== "null") ? JSON.parse(raw) : [];
       
       // Update cache
       cache.logs[moduleName] = parsed;

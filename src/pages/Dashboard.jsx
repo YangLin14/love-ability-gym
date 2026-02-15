@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppProvider';
+import DailyCheckIn from '../components/DailyCheckIn';
 
 const Dashboard = () => {
-  const { userStats, t, toggleLanguage, language } = useApp();
+  const { userStats, t, toggleLanguage, language, userProfile } = useApp();
   const navigate = useNavigate();
   const [assessment, setAssessment] = useState(null);
 
@@ -31,15 +32,16 @@ const Dashboard = () => {
   // Get greeting based on time of day
   const getTimeGreeting = () => {
     const hour = new Date().getHours();
-    if (hour < 12) return 'Good Morning,';
-    if (hour < 18) return 'Good Afternoon,';
-    return 'Good Evening,';
+    if (hour < 12) return t('dashboard.morning');
+    if (hour < 18) return t('dashboard.afternoon');
+    return t('dashboard.evening');
   };
 
   // Format current date
   const getFormattedDate = () => {
     const now = new Date();
-    return now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+    const locale = language === 'zh' ? 'zh-TW' : 'en-US';
+    return now.toLocaleDateString(locale, { weekday: 'long', month: 'long', day: 'numeric' });
   };
 
   return (
@@ -62,7 +64,9 @@ const Dashboard = () => {
             }}>
               {getFormattedDate()}
             </p>
-            <div style={{fontSize: '11px', color: '#999', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '4px'}}>Gym Dashboard</div>
+            <div style={{fontSize: '11px', color: '#999', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '4px'}}>
+              {t('dashboard.intro_label')}
+            </div>
             <h1 style={{
               margin: 0,
               fontFamily: 'var(--font-display)',
@@ -74,7 +78,7 @@ const Dashboard = () => {
             }}>
               {getTimeGreeting()} <br/>
               <span style={{fontStyle: 'normal', fontWeight: 300, color: 'var(--color-moss-dark)'}}>
-                {t('dashboard.greeting').replace('Hello, ', '')}
+                {userProfile?.name || t('common.user')}
               </span>
             </h1>
           </div>
@@ -257,6 +261,11 @@ const Dashboard = () => {
               {t('dashboard.focus_quote')}
             </p>
           </div>
+        </section>
+
+        {/* Daily Check-in */}
+        <section>
+          <DailyCheckIn />
         </section>
 
         {/* The Garden — 5 Modules */}

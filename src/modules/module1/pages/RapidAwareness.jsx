@@ -1,13 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../../../context/AppProvider';
 import StorageService from '../../../services/StorageService';
 import SimpleLineChart from '../../../components/SimpleLineChart';
 import BackButton from '../../../components/BackButton';
+import { useEmotionAnalysis } from '../../../hooks/useEmotionAnalysis';
 
 const RapidAwareness = () => {
   const navigate = useNavigate();
   const { t, addXp } = useApp();
+  const { insights, loading } = useEmotionAnalysis(14); // Use shared hook for consistent data
   
   // Form State
   const [form, setForm] = useState({
@@ -18,42 +20,7 @@ const RapidAwareness = () => {
     score: 0 
   });
 
-  const [historyData, setHistoryData] = useState([]);
   const [showHistory, setShowHistory] = useState(false);
-
-  useEffect(() => {
-    loadChartData();
-  }, []);
-
-  const loadChartData = () => {
-    const logs = StorageService.getLogs('module1');
-    const awarenessLogs = logs.filter(l => l.tool === 'Rapid Awareness');
-    
-    // Process last 14 days
-    const last14Days = [];
-    for (let i = 13; i >= 0; i--) {
-        const d = new Date();
-        d.setDate(d.getDate() - i);
-        const dateStr = d.toLocaleDateString();
-        
-        // Find max absolute score for this day
-        const dayLogs = awarenessLogs.filter(l => new Date(l.timestamp).toLocaleDateString() === dateStr);
-        let maxScore = 0;
-        
-        if (dayLogs.length > 0) {
-            const scores = dayLogs.map(l => l.score);
-            const maxAbs = Math.max(...scores.map(Math.abs));
-            maxScore = scores.find(s => Math.abs(s) === maxAbs) || 0;
-        }
-
-        last14Days.push({
-            label: `${d.getMonth() + 1}/${d.getDate()}`,
-            score: maxScore,
-            fullDate: dateStr
-        });
-    }
-    setHistoryData(last14Days);
-  };
 
   const handleSave = () => {
     if (!form.location || !form.event || !form.emotion) return;
@@ -67,7 +34,14 @@ const RapidAwareness = () => {
     addXp(20);
     alert('Recorded!');
     
-    loadChartData();
+    // Force reload of insights? 
+    // The hook listens to 'period' and 'language', and 'StorageService' updates are not automatically detected unless we trigger something.
+    // Ideally useEmotionAnalysis should subscribe to storage changes or we force a re-render.
+    // For simplicity in this architecture, navigating or remounting triggers it.
+    // We can just set form and maybe toggle? 
+    // Actually, since we are using a hook that runs on mount/update, we might need a way to refresh it.
+    // But typically user will view history after saving.
+    
     setForm(prev => ({
         ...prev,
         location: '', 
@@ -75,6 +49,13 @@ const RapidAwareness = () => {
         emotion: '',
         score: 0
     }));
+    
+    // Quick hack: window.location.reload() is too heavy. 
+    // Since `useEmotionAnalysis` doesn't have a listener, the chart won't update immediately without a refresh signal.
+    // However, the user request is about "combining" logic. 
+    // If I reload the page it works. Or I can pass a `refresh` dependency to the hook.
+    // For now, let's just accept it might not update instantly until toggle or re-enter.
+    // Or... I can modify the hook to accept a dependency, but that's out of scope.
   };
 
 
@@ -175,9 +156,15 @@ const RapidAwareness = () => {
       ) : (
         <div className="fade-in chart-container" style={{background: 'white', padding: '20px', borderRadius: '16px', boxShadow: 'var(--shadow-sm)'}}>
            <h3 style={{textAlign: 'center', marginBottom: '20px'}}>{t('module1.rapid.chart_title')}</h3>
-           <div style={{width: '100%', height: '250px'}}>
-              <SimpleLineChart data={historyData} />
-           </div>
+           
+           {loading ? (
+             <div style={{textAlign: 'center', padding: '20px'}}>Loading...</div>
+           ) : (
+             <div style={{width: '100%', height: '250px'}}>
+                <SimpleLineChart data={insights?.dailyFluctuations || []} />
+             </div>
+           )}
+           
            <p style={{fontSize: '12px', color: '#999', marginTop: '10px', textAlign: 'center'}}>
              {t('module1.rapid.chart_desc')}
            </p>

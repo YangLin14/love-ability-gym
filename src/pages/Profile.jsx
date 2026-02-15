@@ -3,11 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppProvider';
 import StorageService from '../services/StorageService';
 import RadarChart from '../components/RadarChart';
-import SimpleLineChart from '../components/SimpleLineChart';
 import EmotionInsights from '../components/EmotionInsights';
 
 const Profile = () => {
-  const { userProfile, setUserProfile, userStats, t } = useApp();
+  const { userProfile, setUserProfile, userStats, t, deferredPrompt, isIos, isStandalone, installPWA } = useApp();
   const navigate = useNavigate();
   
   const [isEditing, setIsEditing] = useState(false);
@@ -15,7 +14,6 @@ const Profile = () => {
   const [history, setHistory] = useState([]);
   const [stats, setStats] = useState({});
   const [assessment, setAssessment] = useState(null);
-  const [rapidData, setRapidData] = useState([]);
 
   useEffect(() => {
     // Load History
@@ -31,32 +29,6 @@ const Profile = () => {
     if (savedAssessment) {
       setAssessment(JSON.parse(savedAssessment));
     }
-
-    // Load Rapid Awareness Data (Last 14 days)
-    const awarenessLogs = logs.filter(l => l.tool === 'Rapid Awareness');
-    const last14Days = [];
-    for (let i = 13; i >= 0; i--) {
-        const d = new Date();
-        d.setDate(d.getDate() - i);
-        const dateStr = d.toLocaleDateString();
-        
-        // Find max absolute score for this day
-        const dayLogs = awarenessLogs.filter(l => new Date(l.timestamp).toLocaleDateString() === dateStr);
-        let maxScore = 0;
-        
-        if (dayLogs.length > 0) {
-            const scores = dayLogs.map(l => l.score);
-            const maxAbs = Math.max(...scores.map(Math.abs));
-            maxScore = scores.find(s => Math.abs(s) === maxAbs) || 0;
-        }
-
-        last14Days.push({
-            label: `${d.getMonth() + 1}/${d.getDate()}`,
-            score: maxScore,
-            fullDate: dateStr
-        });
-    }
-    setRapidData(last14Days);
 
   }, []);
 
@@ -226,7 +198,7 @@ const Profile = () => {
              <div onClick={() => setIsEditing(true)} style={{fontSize: '60px', marginBottom: '10px', cursor: 'pointer'}}>
                {userProfile.avatar}
              </div>
-             <h3 style={{margin: '0 0 5px 0', fontSize: '24px'}}>{userProfile.name} <span style={{fontSize: '14px', color: '#999', fontWeight: 'normal'}}>✏️</span></h3>
+             <h3 style={{margin: '0 0 5px 0', fontSize: '24px'}}>{userProfile.name} <span onClick={() => setIsEditing(true)} style={{fontSize: '18px', color: '#999', fontWeight: 'normal', cursor: 'pointer', marginLeft: '5px'}}>✏️</span></h3>
              <div style={{color: '#666', fontSize: '14px', marginBottom: '20px'}}>
                 {userProfile.age ? `${userProfile.age} y/o` : ''} • Lv. {userStats.level} • {userStats.xp} XP
              </div>
@@ -244,6 +216,56 @@ const Profile = () => {
           </>
         )}
       </div>
+
+      {/* App Settings / PWA Install */}
+      {/* Show only if installable (Android deferred prompt exists OR iOS not standalone) */}
+      {((deferredPrompt) || (isIos && !isStandalone)) && (
+        <div 
+            onClick={installPWA}
+            style={{
+                background: 'var(--color-sage-light)', 
+                borderRadius: '16px', 
+                padding: '16px', 
+                marginBottom: '30px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                cursor: 'pointer',
+                border: '1px solid var(--color-border)',
+                boxShadow: 'var(--shadow-sm)'
+            }}
+        >
+            <div style={{display: 'flex', alignItems: 'center', gap: '16px'}}>
+                <div style={{
+                    width: '40px', 
+                    height: '40px', 
+                    background: 'white', 
+                    borderRadius: '12px', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center',
+                    fontSize: '20px'
+                }}>
+                    🌿
+                </div>
+                <div>
+                    <div style={{fontWeight: '600', fontSize: '16px', color: 'var(--color-sage-dark)'}}>{t('pwa.install_title') || 'Install App'}</div>
+                    <div style={{fontSize: '13px', color: 'var(--color-text-secondary)'}}>{t('pwa.install_desc') || 'Add to Home Screen'}</div>
+                </div>
+            </div>
+            <div style={{
+                background: 'var(--color-moss-dark)', 
+                color: 'white',
+                padding: '8px 16px', 
+                borderRadius: '20px', 
+                fontSize: '13px', 
+                fontWeight: '500',
+                boxShadow: '0 2px 8px rgba(94, 107, 92, 0.2)'
+            }}>
+                {isIos ? 'Show Guide' : 'Install'}
+            </div>
+        </div>
+      )}
 
       {/* Emotion Insights Report */}
       <section style={{marginBottom: '30px'}}>
@@ -277,13 +299,7 @@ const Profile = () => {
             </div>
           )}
 
-          {/* Rapid Awareness Chart */}
-          <div style={{background: 'white', padding: '20px', borderRadius: '20px', boxShadow: 'var(--shadow-sm)', textAlign: 'center'}}>
-             <h4 style={{margin: '0 0 15px 0', fontSize: '14px', color: '#888'}}>{t('module1.rapid.chart_title')}</h4>
-             <div style={{width: '100%', height: '200px', margin: '0 auto'}}>
-                <SimpleLineChart data={rapidData} />
-             </div>
-          </div>
+
 
           {/* Usage Stats (Bar Chart mockup using CSS) */}
           <div style={{background: 'white', padding: '20px', borderRadius: '20px', boxShadow: 'var(--shadow-sm)'}}>

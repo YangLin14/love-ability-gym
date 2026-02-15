@@ -11,6 +11,7 @@ export const UserProvider = ({ children }) => {
       xp: 0,
       streak: 0,
       lqScore: 0,
+      lastActivityDate: null,
     };
   });
 
@@ -34,6 +35,30 @@ export const UserProvider = ({ children }) => {
 
   const addXp = (amount) => {
     setUserStats(prev => {
+      const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+      const lastActive = prev.lastActivityDate;
+      
+      let newStreak = prev.streak;
+
+      if (lastActive !== today) {
+        if (lastActive) {
+          const yesterday = new Date();
+          yesterday.setDate(yesterday.getDate() - 1);
+          const yesterdayStr = yesterday.toISOString().split('T')[0];
+
+          if (lastActive === yesterdayStr) {
+            // Consecutive day
+            newStreak += 1;
+          } else {
+            // Missed a day or more
+            newStreak = 1;
+          }
+        } else {
+          // First ever activity
+          newStreak = 1;
+        }
+      }
+      
       const newXp = prev.xp + amount;
       // Simple leveling: Level * 100 XP to level up
       const nextLevelXp = prev.level * 100;
@@ -48,7 +73,9 @@ export const UserProvider = ({ children }) => {
       return {
         ...prev,
         level: newLevel,
-        xp: newXp // Total XP
+        xp: newXp,
+        streak: newStreak,
+        lastActivityDate: today
       };
     });
   };
