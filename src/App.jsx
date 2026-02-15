@@ -1,10 +1,11 @@
-import React, { Suspense, lazy } from 'react';
+import React, { Suspense, lazy, useState, useCallback } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { AppProvider } from './context/AppProvider';
 import CrisisButton from './components/CrisisButton';
 import CrisisOverlay from './components/CrisisOverlay';
 import BottomNav from './components/BottomNav';
 import LoadingFallback from './components/LoadingFallback';
+import SplashScreen from './components/SplashScreen';
 
 // Lazy load pages
 const Dashboard = lazy(() => import('./pages/Dashboard'));
@@ -73,8 +74,12 @@ function AppContent() {
 }
 
 function App() {
+  const [showSplash, setShowSplash] = useState(true);
+  const handleSplashFinished = useCallback(() => setShowSplash(false), []);
+
   return (
     <AppProvider>
+      {showSplash && <SplashScreen onFinished={handleSplashFinished} />}
       <Router>
         <AppContent />
       </Router>
