@@ -2,6 +2,7 @@ import React, { createContext, useState, useContext, useEffect } from 'react';
 import { LanguageProvider, useLanguage } from './LanguageContext';
 import { UserProvider, useUser } from './UserContext';
 import { AuthProvider, useAuth } from './AuthContext';
+import StorageService from '../services/StorageService';
 
 const AppContext = createContext();
 
@@ -13,6 +14,11 @@ const AppStateProvider = ({ children }) => {
   const [showIosInstall, setShowIosInstall] = useState(false);
   const [isIos, setIsIos] = useState(false);
   const [isStandalone, setIsStandalone] = useState(false);
+
+  // Initialize StorageService (IndexedDB migration + cache warm-up)
+  useEffect(() => {
+    StorageService.init();
+  }, []);
 
   useEffect(() => {
     // Check Platform

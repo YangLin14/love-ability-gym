@@ -23,23 +23,22 @@ Love Ability Gym is not about finding love—it's about **building the capacity 
 ## ✨ Features
 
 - 🌐 **Bilingual Support** - Full English and Traditional Chinese (繁體中文)
-- ☁️ **Optional Cloud Sync** - Secure backup and multi-device sync via Supabase
+- ☁️ **Optional Cloud Sync** - Delta sync with conflict resolution via Supabase
 - 🎬 **Smooth Animations** - Seamless page transitions and expanding UI elements
-- ♿ **Accessible Design** - Screen reader friendly forms and semantic HTML
+- ♿ **Accessible Design** - ARIA labels, keyboard navigation, screen reader support
 - 🚀 **Instant Splash Screen** - Immediate load with smooth transitions
 - 📲 **PWA Ready** - Installable as a native app with offline capabilities
 - 📱 **Mobile-First Design** - Optimized for phone use
 - 📊 **Progress Tracking** - XP system and emotional weather charts
 - 🆘 **Crisis Mode** - Quick-access breathing exercises for emotional emergencies
-- 💾 **Local Storage** - All data stored privately on your device
+- 💾 **IndexedDB Storage** - All data stored privately on your device with localStorage fallback
 
 ## 🔒 Data & Privacy
 
 **Your data belongs to you.**
 
-- **Local Storage**: All logs, journal entries, and progress are stored exclusively in your browser's `localStorage` (prefixed with `love_gym_`).
-- **Local Storage**: All logs, journal entries, and progress are stored primarily in your browser's `localStorage` (prefixed with `love_gym_`).
-- **Hybrid Sync**: If you choose to sign in, data is backed up to a private Supabase database for multi-device access.
+- **IndexedDB + localStorage**: All logs, journal entries, and progress are stored primarily in **IndexedDB** (async, >5MB capacity) with **localStorage** as fallback. Keys are prefixed with `love_gym_`.
+- **Delta Sync**: If you choose to sign in, data is backed up to a private Supabase database. Only new/changed records are synced (not the entire history), and conflicts are resolved via Last-Write-Wins timestamps.
 - **Privacy First**: Syncing is completely optional. If you don't sign in, data never leaves your device.
 - **⚠️ Important**: Clearing your browser cache or uninstalling the PWA will delete your data. We recommend backing up manually if needed.
 
@@ -80,6 +79,16 @@ love-ability-gym/
 ├── public/                  # Static assets
 ├── src/
 │   ├── components/          # Shared UI components
+│   │   ├── profile/         # Decomposed Profile sub-components
+│   │   │   ├── ProfileHeader.jsx
+│   │   │   ├── StatsOverview.jsx
+│   │   │   ├── ActivityHistory.jsx
+│   │   │   └── LogItem.jsx
+│   │   ├── BottomNav.jsx
+│   │   ├── BottomNav.module.css
+│   │   ├── DailyCheckIn.jsx
+│   │   ├── DailyCheckIn.module.css
+│   │   └── ...
 │   ├── context/             # React context providers
 │   ├── i18n/                # Internationalization
 │   ├── modules/             # Feature modules (1-5)
@@ -89,7 +98,13 @@ love-ability-gym/
 │   │   ├── module4/         # Allowing tools
 │   │   └── module5/         # Influence tools
 │   ├── pages/               # Main pages (Dashboard, Profile, Onboarding)
+│   │   ├── Profile.jsx      # Decomposed (uses profile/ sub-components)
+│   │   ├── Profile.module.css
+│   │   └── ...
 │   ├── services/            # Storage and utility services
+│   │   ├── StorageService.js # Hybrid IndexedDB + localStorage + Supabase sync
+│   │   ├── db.js            # Native IndexedDB wrapper (zero dependencies)
+│   │   └── supabaseClient.js
 │   └── styles/              # Global styles and theme
 ├── index.html
 ├── package.json
@@ -100,14 +115,16 @@ love-ability-gym/
 
 - **Framework**: React 19
 - **Build Tool**: Vite
-- **Styling**: Vanilla CSS with CSS Variables
+- **Styling**: CSS Modules + CSS Variables
 - **Animation**: Framer Motion
 - **State Management**: React Context
-- **Storage**: LocalStorage (Offline-first) + Supabase (Optional Sync)
+- **Storage**: IndexedDB (primary) + localStorage (fallback) + Supabase (optional cloud sync)
+- **Sync**: Delta sync with LWW conflict resolution
 - **Database**: PostgreSQL (via Supabase)
 - **Charts**: Custom SVG components
-- **Testing**: Vitest, React Testing Library
+- **Testing**: Vitest (73 tests), React Testing Library
 - **PWA**: Vite PWA Plugin
+- **Accessibility**: ARIA labels, keyboard nav, screen reader support
 
 ## 📄 License
 

@@ -31,7 +31,9 @@ vi.mock('../../services/StorageService', () => ({
         saveProfile: vi.fn(),
         saveStats: vi.fn(),
         subscribe: vi.fn(() => vi.fn()),
-        notify: vi.fn()
+        notify: vi.fn(),
+        init: vi.fn(),
+        clearAllData: vi.fn(),
     }
 }));
 
@@ -57,22 +59,22 @@ describe('Settings Page', () => {
         AuthContextModule.useAuth.mockReturnValue(defaultAuthContext);
     });
 
-    it('renders basic elements', () => {
-        render(<Settings />);
+    it('renders basic elements', async () => {
+        await render(<Settings />);
         expect(screen.getByText('settings.title')).toBeInTheDocument();
         expect(screen.getByText('settings.cloud_sync')).toBeInTheDocument();
         expect(screen.getByText('settings.danger_zone')).toBeInTheDocument();
     });
 
-    it('renders Reset All Data button', () => {
-        render(<Settings />);
+    it('renders Reset All Data button', async () => {
+        await render(<Settings />);
         // The button text might be from translation 'profile.reset_btn' or fallback
         // The mock t returns the key, so we look for 'profile.reset_btn'
         expect(screen.getByText('profile.reset_btn')).toBeInTheDocument();
     });
 
     describe('PWA Install Features', () => {
-        it('renders install button when deferredPrompt exists', () => {
+        it('renders install button when deferredPrompt exists', async () => {
             const installMock = vi.fn();
             AppProviderModule.useApp.mockReturnValue({
                 ...defaultAppContext,
@@ -80,7 +82,7 @@ describe('Settings Page', () => {
                 installPWA: installMock
             });
 
-            render(<Settings />);
+            await render(<Settings />);
             expect(screen.getByText('pwa.install_title')).toBeInTheDocument();
             expect(screen.getByText('Install')).toBeInTheDocument();
             
@@ -89,7 +91,7 @@ describe('Settings Page', () => {
             expect(installMock).toHaveBeenCalled();
         });
 
-        it('renders show guide button when isIos is true', () => {
+        it('renders show guide button when isIos is true', async () => {
             const installMock = vi.fn();
             AppProviderModule.useApp.mockReturnValue({
                 ...defaultAppContext,
@@ -97,19 +99,19 @@ describe('Settings Page', () => {
                 installPWA: installMock
             });
 
-            render(<Settings />);
+            await render(<Settings />);
             expect(screen.getByText('pwa.install_title')).toBeInTheDocument();
             expect(screen.getByText('Show Guide')).toBeInTheDocument();
         });
 
-        it('does not render button if already installed (standalone)', () => {
+        it('does not render button if already installed (standalone)', async () => {
             AppProviderModule.useApp.mockReturnValue({
                 ...defaultAppContext,
                 isIos: true,
                 isStandalone: true
             });
 
-            render(<Settings />);
+            await render(<Settings />);
             expect(screen.queryByText('pwa.install_title')).not.toBeInTheDocument();
         });
     });

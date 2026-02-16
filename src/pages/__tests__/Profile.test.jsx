@@ -22,6 +22,8 @@ vi.mock('../../services/StorageService', () => ({
     saveProfile: vi.fn(),
     saveStats: vi.fn(),
     syncGlobalData: vi.fn().mockResolvedValue({}),
+    init: vi.fn(),
+    clearAllData: vi.fn(),
   },
 }));
 
@@ -30,8 +32,8 @@ describe('Frontend Elements', () => {
     localStorage.clear();
   });
 
-  it('渲染基本元素', () => {
-    render(<Profile />);
+  it('渲染基本元素', async () => {
+    await render(<Profile />);
 
     // 顯示標題 "Profile & History"
     expect(screen.getByText(/Profile & History/i)).toBeInTheDocument();
@@ -53,8 +55,8 @@ describe('Frontend Elements', () => {
     expect(screen.getByText(/No training history yet/i)).toBeInTheDocument();
   });
 
-  it('顯示 Profile 卡片（預設資料）', () => {
-    render(<Profile />);
+  it('顯示 Profile 卡片（預設資料）', async () => {
+    await render(<Profile />);
 
     // 頭像
     expect(screen.getByText('😊')).toBeInTheDocument();
@@ -72,8 +74,8 @@ describe('Function Logic', () => {
     localStorage.clear();
   });
 
-  it('進入編輯模式', () => {
-    render(<Profile />);
+  it('進入編輯模式', async () => {
+    await render(<Profile />);
 
     // 點擊頭像觸發編輯
     fireEvent.click(screen.getByText('😊'));
@@ -87,8 +89,8 @@ describe('Function Logic', () => {
     expect(screen.getByText(/Save Changes/i)).toBeInTheDocument();
   });
 
-  it('點擊鉛筆圖示進入編輯模式', () => {
-    render(<Profile />);
+  it('點擊鉛筆圖示進入編輯模式', async () => {
+    await render(<Profile />);
     
     // 點擊鉛筆
     fireEvent.click(screen.getByText('✏️'));
@@ -97,8 +99,8 @@ describe('Function Logic', () => {
     expect(screen.getByText(/Save Changes/i)).toBeInTheDocument();
   });
 
-  it('編輯 Profile 並儲存', () => {
-    render(<Profile />);
+  it('編輯 Profile 並儲存', async () => {
+    await render(<Profile />);
 
     // 進入編輯模式
     fireEvent.click(screen.getByText('😊'));

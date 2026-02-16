@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppProvider';
 import StorageService from '../services/StorageService';
+import styles from './DailyCheckIn.module.css';
 
 const DailyCheckIn = () => {
   const { t, userStats } = useApp();
@@ -34,30 +35,16 @@ const DailyCheckIn = () => {
 
   if (hasCheckedIn) {
     return (
-      <div className="glass-panel" style={{
-        borderRadius: 'var(--radius-xl)',
-        padding: '20px',
-        marginBottom: '24px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        background: 'linear-gradient(135deg, rgba(255,255,255,0.9), rgba(240,248,240,0.9))'
-      }}>
-        <div style={{display: 'flex', alignItems: 'center', gap: '15px'}}>
-          <div style={{
-            fontSize: '28px', 
-            background: 'var(--color-sage-light)', 
-            width: '48px', height: '48px', 
-            borderRadius: '50%', 
-            display: 'flex', alignItems: 'center', justifyContent: 'center'
-          }}>
+      <div className={`glass-panel ${styles.completedPanel}`}>
+        <div className={styles.completedContent}>
+          <div className={styles.checkIcon} aria-hidden="true">
             ✅
           </div>
           <div>
-            <h4 style={{margin: '0 0 4px 0', color: 'var(--color-moss-dark)'}}>
+            <h4 className={styles.completedTitle}>
               {typeof t('dashboard.checkin_complete') === 'string' ? t('dashboard.checkin_complete') : 'Checked in!'}
             </h4>
-            <p style={{margin: 0, fontSize: '13px', color: '#666'}}>
+            <p className={styles.completedSub}>
               {typeof t('dashboard.checkin_streak_keep') === 'string' ? t('dashboard.checkin_streak_keep') : 'Great job!'}
             </p>
           </div>
@@ -67,50 +54,20 @@ const DailyCheckIn = () => {
   }
 
   return (
-    <div className="glass-panel" style={{
-      borderRadius: 'var(--radius-xl)',
-      padding: '24px',
-      marginBottom: '24px',
-      position: 'relative',
-      overflow: 'hidden',
-      textAlign: 'center'
-    }}>
-      <h3 style={{
-        margin: '0 0 8px 0',
-        fontFamily: 'var(--font-display)',
-        fontSize: '20px',
-        color: 'var(--color-soft-charcoal)',
-      }}>
+    <div className={`glass-panel ${styles.wrapper}`}>
+      <h3 className={styles.title}>
         {t('dashboard.checkin_title')}
       </h3>
-      <p style={{
-        margin: '0 0 20px 0',
-        fontSize: '14px',
-        color: '#888'
-      }}>
+      <p className={styles.subtitle}>
         {t('dashboard.checkin_sub')}
       </p>
       
       <button 
         onClick={handleCheckIn}
-        className="primary-btn scale-on-active"
-        style={{
-          width: '100%',
-          padding: '16px',
-          borderRadius: '16px',
-          fontSize: '16px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: '8px',
-          background: 'var(--color-primary)',
-          color: 'white',
-          border: 'none',
-          boxShadow: 'var(--shadow-md)',
-          cursor: 'pointer'
-        }}
+        className={`primary-btn scale-on-active ${styles.ctaButton}`}
+        aria-label="Start daily check-in"
       >
-        <span style={{fontSize: '20px'}}>🌡️</span>
+        <span className={styles.ctaIcon} aria-hidden="true">🌡️</span>
         {t('dashboard.checkin_cta')}
       </button>
     </div>

@@ -110,20 +110,20 @@ describe('StorageService', () => {
     });
 
     it('handles storage errors gracefully', () => {
-        // Use spyOn instead of direct assignment for robust mocking
+        // With IndexedDB as primary store, saveLog succeeds even when localStorage throws.
+        // The localStorage write is wrapped in try-catch, so it's a non-fatal fallback failure.
         const setItemSpy = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
             throw new Error('QuotaExceeded');
         });
         
-        const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-        
         const result = StorageService.saveLog('module1', { data: 'test' });
         
-        expect(result).toBeNull();
-        expect(consoleSpy).toHaveBeenCalled(); // Should log error
+        // saveLog should still succeed (writes to cache + IndexedDB)
+        expect(result).not.toBeNull();
+        expect(result).toHaveProperty('uuid');
+        expect(result).toHaveProperty('data', 'test');
         
         setItemSpy.mockRestore();
-        consoleSpy.mockRestore();
     }); 
 
     it('handles corrupted JSON data gracefully', () => {

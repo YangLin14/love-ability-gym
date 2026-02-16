@@ -1,0 +1,90 @@
+.wrapper {
+  border-radius: var(--radius-xl);
+  padding: 24px;
+  margin-bottom: 24px;
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+}
+
+.glass {
+  composes: wrapper;
+  /* assuming glass-panel class style needs to be imported or re-declared? 
+     The original used 'glass-panel' global class AND inline styles.
+     I should keep 'glass-panel' global if it exists OR define it here.
+     The inline styles had background/borderRadius/padding. 
+     I will assume 'glass-panel' is global and keep it, OR fully migrate.
+     Let's fully migrate the inline parts to here, and keep 'glass-panel' class in JSX if it provides blur/border.
+  */
+}
+
+.completedPanel {
+  border-radius: var(--radius-xl);
+  padding: 20px;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(240,248,240,0.9));
+}
+
+.completedContent {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.checkIcon {
+  font-size: 28px; 
+  background: var(--color-sage-light); 
+  width: 48px; 
+  height: 48px; 
+  border-radius: 50%; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
+}
+
+.completedTitle {
+  margin: 0 0 4px 0;
+  color: var(--color-moss-dark);
+}
+
+.completedSub {
+  margin: 0;
+  font-size: 13px;
+  color: #666;
+}
+
+.title {
+  margin: 0 0 8px 0;
+  font-family: var(--font-display);
+  font-size: 20px;
+  color: var(--color-soft-charcoal);
+}
+
+.subtitle {
+  margin: 0 0 20px 0;
+  font-size: 14px;
+  color: #888;
+}
+
+.ctaButton {
+  width: 100%;
+  padding: 16px;
+  border-radius: 16px;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  box-shadow: var(--shadow-md);
+  cursor: pointer;
+}
+
+.ctaIcon {
+  font-size: 20px;
+}

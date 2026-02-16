@@ -61,7 +61,7 @@ describe('User Integration Flow', () => {
             </AppProvider>
         );
 
-        render(<TestApp />);
+        await act(async () => { render(<TestApp />); });
 
         // 1. Verify on Dashboard and Check-in CTA is present
         // Since we mocked translations, check for keys
@@ -102,7 +102,8 @@ describe('User Integration Flow (State verified)', () => {
             </AppProvider>
         );
 
-        const { unmount } = render(<TestApp />);
+        let unmount;
+        await act(async () => { const result = render(<TestApp />); unmount = result.unmount; });
 
         // 1. Initial State: No check-in
         expect(screen.getByText('dashboard.checkin_cta')).toBeInTheDocument();
@@ -131,7 +132,7 @@ describe('User Integration Flow (State verified)', () => {
         localStorage.setItem('love_ability_stats', JSON.stringify(userStats));
         
         // 3. Re-render Dashboard (simulating returning to it)
-        render(<TestApp />);
+        await act(async () => { render(<TestApp />); });
         
         // Should now show "Complete" instead of CTA
         // Note: We need to wait for useEffects

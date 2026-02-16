@@ -21,8 +21,8 @@ describe('Dashboard', () => {
   });
 
   describe('Frontend Elements', () => {
-    it('renders basic elements', () => {
-      render(<Dashboard />);
+    it('renders basic elements', async () => {
+      await render(<Dashboard />);
 
       // Title
       expect(screen.getByText(/Gym Dashboard/i)).toBeInTheDocument();
@@ -34,15 +34,15 @@ describe('Dashboard', () => {
       expect(screen.getByText(/The Garden/i)).toBeInTheDocument();
     });
 
-    it('shows user level', () => {
-      render(<Dashboard />);
+    it('shows user level', async () => {
+      await render(<Dashboard />);
       expect(screen.getByText(/Lv\. 1/i)).toBeInTheDocument();
     });
   });
 
   describe('Function Logic', () => {
-    it('shows 5 module cards', () => {
-      render(<Dashboard />);
+    it('shows 5 module cards', async () => {
+      await render(<Dashboard />);
 
       expect(screen.getByText(/Awareness/i)).toBeInTheDocument();
       expect(screen.getByText(/Expression/i)).toBeInTheDocument();
@@ -51,8 +51,8 @@ describe('Dashboard', () => {
       expect(screen.getByText(/Influence/i)).toBeInTheDocument();
     });
 
-    it('navigates to module when card is clicked', () => {
-      render(<Dashboard />);
+    it('navigates to module when card is clicked', async () => {
+      await render(<Dashboard />);
       
       const awarenessCard = screen.getByText(/Awareness/i).closest('button');
       fireEvent.click(awarenessCard);
@@ -60,15 +60,15 @@ describe('Dashboard', () => {
       expect(mockNavigate).toHaveBeenCalledWith('/gym?module=module1');
     });
 
-    it('shows Assessment card when no data is saved', () => {
-      render(<Dashboard />);
+    it('shows Assessment card when no data is saved', async () => {
+      await render(<Dashboard />);
 
       expect(screen.getByText(/Start Here/i)).toBeInTheDocument();
       expect(screen.getByText(/Love Ability Assessment/i)).toBeInTheDocument();
     });
 
-    it('navigates to onboarding when Assessment card is clicked', () => {
-        render(<Dashboard />);
+    it('navigates to onboarding when Assessment card is clicked', async () => {
+        await render(<Dashboard />);
         
         const assessmentCard = screen.getByText(/Start Here/i).closest('.glass-panel');
         fireEvent.click(assessmentCard);
@@ -76,15 +76,15 @@ describe('Dashboard', () => {
         expect(mockNavigate).toHaveBeenCalledWith('/onboarding');
     });
 
-    it('hides Assessment card when data exists in localStorage', () => {
+    it('hides Assessment card when data exists in localStorage', async () => {
       localStorage.setItem('user_assessment', JSON.stringify({ completed: true }));
-      render(<Dashboard />);
+      await render(<Dashboard />);
 
       expect(screen.queryByText(/Start Here/i)).not.toBeInTheDocument();
     });
 
-    it('toggles language', () => {
-      render(<Dashboard />);
+    it('toggles language', async () => {
+      await render(<Dashboard />);
 
       const toggleBtn = screen.getByText('CN');
       expect(toggleBtn).toBeInTheDocument();

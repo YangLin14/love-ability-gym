@@ -8,14 +8,25 @@ import StorageService from '../services/StorageService';
 export const UserProvider = ({ children }) => {
   // Load initial state from localStorage
   const [userStats, setUserStats] = useState(() => {
-    const saved = localStorage.getItem('love_ability_stats');
-    return saved ? JSON.parse(saved) : {
-      level: 1,
-      xp: 0,
-      streak: 0,
-      lqScore: 0,
-      lastActivityDate: null,
-    };
+    try {
+      const saved = localStorage.getItem('love_ability_stats');
+      return saved ? JSON.parse(saved) : {
+        level: 1,
+        xp: 0,
+        streak: 0,
+        lqScore: 0,
+        lastActivityDate: null,
+      };
+    } catch (e) {
+      console.error("Failed to parse user stats", e);
+      return {
+        level: 1,
+        xp: 0,
+        streak: 0,
+        lqScore: 0,
+        lastActivityDate: null,
+      };
+    }
   });
 
   const { user } = useAuth();
@@ -39,12 +50,21 @@ export const UserProvider = ({ children }) => {
   }, [user]);
  
    const [userProfile, setUserProfile] = useState(() => {
-     const saved = localStorage.getItem('love_ability_profile');
-     return saved ? JSON.parse(saved) : {
-       name: 'User',
-       age: '',
-       avatar: '😊'
-     };
+     try {
+       const saved = localStorage.getItem('love_ability_profile');
+       return saved ? JSON.parse(saved) : {
+         name: 'User',
+         age: '',
+         avatar: '😊'
+       };
+     } catch (e) {
+       console.error("Failed to parse user profile", e);
+       return {
+         name: 'User',
+         age: '',
+         avatar: '😊'
+       };
+     }
    });
 
   // Save changes to localStorage
