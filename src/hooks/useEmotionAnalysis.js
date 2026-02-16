@@ -64,8 +64,9 @@ export const useEmotionAnalysis = (period = 14) => {
           const catLabel = language === 'zh' ? emotion.category_zh : emotion.category;
           categoryCounts[catLabel] = (categoryCounts[catLabel] || 0) + 1;
           
-          if (emotion.need) {
-            const needs = emotion.need.split(/[、,]/);
+          const needStr = language === 'zh' ? emotion.need : (emotion.need_en || emotion.need);
+          if (needStr) {
+            const needs = needStr.split(/[、,]/);
             needs.forEach(need => {
               const trimmed = need.trim();
               if (trimmed) needCounts[trimmed] = (needCounts[trimmed] || 0) + 1;
