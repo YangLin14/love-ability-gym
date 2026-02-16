@@ -53,14 +53,14 @@ export const UserProvider = ({ children }) => {
      try {
        const saved = localStorage.getItem('love_ability_profile');
        return saved ? JSON.parse(saved) : {
-         name: 'User',
+         name: 'Love Practitioner',
          age: '',
          avatar: '😊'
        };
      } catch (e) {
        console.error("Failed to parse user profile", e);
        return {
-         name: 'User',
+         name: 'Love Practitioner',
          age: '',
          avatar: '😊'
        };

@@ -41,8 +41,8 @@ describe('Frontend Elements', () => {
     // 顯示返回按鈕
     expect(screen.getByText('←')).toBeInTheDocument();
 
-    // 顯示使用者名稱 (default: "User")
-    expect(screen.getByText(/User/)).toBeInTheDocument();
+    // 顯示使用者名稱 (default: "Love Practitioner")
+    expect(screen.getByText(/Love Practitioner/)).toBeInTheDocument();
 
     // 顯示等級
     expect(screen.getByText(/Lv\. 1/)).toBeInTheDocument();
@@ -62,7 +62,7 @@ describe('Frontend Elements', () => {
     expect(screen.getByText('😊')).toBeInTheDocument();
 
     // 名稱
-    expect(screen.getByText(/User/)).toBeInTheDocument();
+    expect(screen.getByText(/Love Practitioner/)).toBeInTheDocument();
 
     // XP
     expect(screen.getByText(/0 XP/)).toBeInTheDocument();
@@ -106,7 +106,7 @@ describe('Function Logic', () => {
     fireEvent.click(screen.getByText('😊'));
 
     // 修改 Name
-    const nameInput = screen.getByDisplayValue('User');
+    const nameInput = screen.getByDisplayValue('Love Practitioner');
     fireEvent.change(nameInput, { target: { value: 'TestUser' } });
 
     // 儲存

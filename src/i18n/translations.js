@@ -6,7 +6,7 @@ export const translations = {
       checkin_cta: 'Scan my emotions',
       checkin_complete: 'Checked in for today!',
       checkin_streak_keep: 'Great job keeping your streak!',
-      greeting: "Hello, User",
+      greeting: "Hello, Love Practitioner",
       intro_label: "Gym Dashboard",
       morning: "Good Morning,",
       afternoon: "Good Afternoon,",
