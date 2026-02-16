@@ -50,7 +50,7 @@ export const translations = {
       seconds: "seconds"
     },
     common: {
-      user: "User",
+      user: "Love Practitioner",
       all: "All",
       back: "Back",
       save: "Save",
@@ -478,7 +478,7 @@ export const translations = {
       seconds: "秒"
     },
     common: {
-      user: "修煉者",
+      user: "愛的修煉者",
       all: "全部",
       back: "返回",
       save: "保存",
